@@ -1,4 +1,4 @@
-# bbibbi
+# BBIBBI
 
 ## Project setup
 ```
