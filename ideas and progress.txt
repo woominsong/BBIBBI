@@ -5,8 +5,12 @@
  3. 실시간 메시지 보내기/받기
  4. 메시지 기록 확인하기
 
-[TODO 6/07]
- - MySQL DB 연결
+[TODO 6/7]
+ ? MySQL DB 연결
  - 웹페이지 전환 구현
- - Component 전환 구현
+ o Component 전환 구현
   - https://www.youtube.com/watch?v=09n2945JW_0
+
+[TODO 6/8]
+ - MySQL DB 연결
+ - https://medium.com/hivelab-dev/vue-express-mysql-part1-98f68408d444
