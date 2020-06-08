@@ -5,12 +5,12 @@
     <!--form method="POST" enctype="multipart/form-data"-->
     <div class="form-group">
       <label for="id">id</label>
-      <input type="text" name="id" id="id" class="form-control" v-bind="user.id" required/>
+      <input type="text" name="id" id="id" class="form-control" v-model="user.id" required/>
     </div>
 
     <div class="form-group">
       <label for="password">password</label>
-      <input type="password" name="password" id="password" class="form-control" v-bind="user.password" required/>
+      <input type="password" name="password" id="password" class="form-control" v-model="user.password" required/>
     </div>
 
     <button v-on:click="signUp" class="btn btn-success">Sign Up</button>
@@ -34,10 +34,10 @@ export default {
     }}
   },
  methods: {
-  signUp: function (event) {
-    alert(event);
+  signUp: function () {
     axios.post('http://localhost:3000/signUp', { 
-      user: this.user
+      id: this.user.id,
+      password: this.user.password
     })
     .then((res) => {
       if (res.data.success == true) {
