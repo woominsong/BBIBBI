@@ -15,7 +15,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(cors());
 
-// MySQL Connection 객체 생성 
+// Create MySQL Connection Object
 var connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,

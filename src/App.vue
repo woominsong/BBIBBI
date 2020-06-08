@@ -2,32 +2,36 @@
   <div id="app">
     <!--img alt="Vue logo" src="./assets/logo.png"-->
     <!--component v-bind:is="component" msg="Welcome to Your Vue.js App"/-->
-    <router-link to="/login">Go to Login</router-link>
-    <router-link to="/signup">Go to Signup</router-link>
+    <!--router-link to="/index">Go to Login</router-link-->
+    <!--router-link to="/signup">Go to Signup</router-link-->
     <router-view></router-view>
+    <!--Index></Index-->
   </div>
 </template>
 
 <script>
 //import HelloWorld from './components/HelloWorld.vue'
 //import LogIn from './components/Login.vue'
-
+//import Index from './components/AppIndex.vue'
 
 export default {
   name: 'App',
   components: {
-    //'hello-world': HelloWorld,
-    //'log-in': LogIn
+    //Index
   },
   data() {
     return {
-      component: 'log-in'
     }    
   }
 }
 </script>
 
 <style>
+@font-face {
+  font-family: "DungGeunMo";
+  src: url("./assets/fonts/DungGeunMo.ttf") format("ttf");
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
