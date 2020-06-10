@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="sign-up">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <h3>Sign up</h3>
     <!--form method="POST" enctype="multipart/form-data"-->
@@ -70,5 +70,9 @@ li {
 }
 a {
   color: #42b983;
+}
+
+#sign-up {
+  background-color: #FFF2CC;
 }
 </style>

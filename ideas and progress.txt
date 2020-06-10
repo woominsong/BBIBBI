@@ -15,3 +15,5 @@
  o MySQL DB 연결
   - https://medium.com/hivelab-dev/vue-express-mysql-part1-98f68408d444
  - 로그인/회원가입 기능 완성
+ o Nested router 구조 이해/구현
+ o 웹페이지 디자인
