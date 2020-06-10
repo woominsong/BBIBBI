@@ -58,7 +58,8 @@ app.post('/signUp', function (req, res) {
       WHERE id = "' + user.userid + '";', 
       function (err, row) {
         if (row.length==0){ // If the ID is not already taken
-          if (user.number == undefined) {
+          let address;
+          if (user.number == "") {
             address = 0;
           }
           else {
@@ -75,15 +76,17 @@ app.post('/signUp', function (req, res) {
               if (row2.length == 0) { // If the phone number is not already taken
                 // Hash password
                 const salt = bcrypt.genSaltSync();
-                var encryptedPassword = bcrypt.hashSync(user.password, salt);
-                encryptedPassword = user.password;
+                const encryptedPassword = bcrypt.hashSync(user.password, salt);
+                console.log(encryptedPassword);
                 // If not already given, generate phone number
                 if (address == 0) {
                   address = newAddress();
                 }
                 // If username is not given, put default name
-                if (user.name == undefined) {
-                  username = "Shy Frodo";
+                let username;
+                console.log(user.name);
+                if (user.name == "") {
+                  username = "익명의 삐삐";
                 }
                 else {
                   username = user.name;
@@ -122,6 +125,7 @@ app.post('/signUp', function (req, res) {
 
 function checkAddress(addr_check) {
   return new Promise(function(resolve, reject) {
+    console.log('SELECT id FROM accounts WHERE addr='+addr_check+';');
     connection.query('SELECT id FROM accounts WHERE addr='+addr_check+';', function(err,row) {
       if (row.length==0) {
         resolve(true);

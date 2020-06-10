@@ -48,6 +48,7 @@ export default {
         alert("두 비밀번호가 일치하지 않습니다.");
         return;
       }
+      let phone_num = "";
       if (this.user.number != "") {
         let modifiedNumber = this.user.number.split("-").join("")
         let numError = !isNumeric(modifiedNumber);
@@ -55,7 +56,7 @@ export default {
           alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
           return;
         }
-        let phone_num = parseInt(modifiedNumber)
+        phone_num = parseInt(modifiedNumber)
         if (phone_num < 1200000000 || phone_num >= 1300000000) {
           alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
           return;
@@ -63,7 +64,9 @@ export default {
       }
       axios.post('http://localhost:3000/signUp', { 
         id: this.user.id,
-        password: this.user.password
+        password: this.user.password,
+        name: this.user.name,
+        number: phone_num
       })
       .then((res) => {
         if (res.data.success == true) {
