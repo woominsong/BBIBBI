@@ -72,16 +72,20 @@ app.post('/signUp', function (req, res) {
             'SELECT id \
             FROM accounts\
             WHERE addr = ' + address +';',
-            function (err,row2) {
+            async function (err,row2) {
               if (row2.length == 0) { // If the phone number is not already taken
                 // Hash password
                 const salt = bcrypt.genSaltSync();
                 const encryptedPassword = bcrypt.hashSync(user.password, salt);
                 console.log(encryptedPassword);
                 // If not already given, generate phone number
+                console.log("address1:");
+                console.log(address);
                 if (address == 0) {
-                  address = newAddress();
+                  address = await newAddress();
                 }
+                console.log("address2:");
+                console.log(address);
                 // If username is not given, put default name
                 let username;
                 console.log(user.name);
@@ -124,10 +128,13 @@ app.post('/signUp', function (req, res) {
 );
 
 function checkAddress(addr_check) {
+  console.log("CheckAddress Entered");
   return new Promise(function(resolve, reject) {
     console.log('SELECT id FROM accounts WHERE addr='+addr_check+';');
     connection.query('SELECT id FROM accounts WHERE addr='+addr_check+';', function(err,row) {
+      console.log(row);
       if (row.length==0) {
+        console.log("condition entered");
         resolve(true);
       }
       else {
@@ -140,8 +147,13 @@ function checkAddress(addr_check) {
 async function newAddress() {
   do {
     var synth_address = 1200000000 + Math.floor(Math.random() * 100000000);
+    console.log(1);
     var isUnique = await checkAddress(synth_address);
-  } while (!isUnique);
+    console.log(2);
+    console.log(isUnique);
+  } 
+  while (!isUnique);
+  console.log(3);
   return synth_address;
 }
 
