@@ -9,6 +9,9 @@
       </div>
       <button v-on:click="logIn" class="btn">로그인!</button>
     </div>
+    <div id="page-link">
+      <router-link to="signup">회원가입하러 가기</router-link>
+    </div>
   </div>
 </template>
 
@@ -91,5 +94,10 @@ a {
   height: 50px;
   background-color: #FFC000;
   font-size: 25px;
+}
+#page-link {
+  margin-top: 5px;
+  margin-bottom: 45px;
+  color: #BF9000;
 }
 </style>

@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mysql = require('mysql');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -22,7 +23,8 @@ var connection = mysql.createConnection({
     user: 'newbie',   
     password: 'SparcsNewbie!',
     database: 'bbibbi_db'
-  });
+  }
+);
   
 // MySQL Connect
 connection.connect(function (err) {   
@@ -46,31 +48,100 @@ app.post('/signUp', function (req, res) {
     console.log(req.body);
     const user = {
       'userid': req.body.id,
-      'password': req.body.password
+      'password': req.body.password,
+      'name': req.body.name,
+      'number': req.body.number
     };
-    connection.query('SELECT id FROM test_t WHERE userid = "' + user.userid + '"', function (err, row) {
-      if (row == undefined){ //  동일한 아이디가 없을경우,
-        //const salt = bcrypt.genSaltSync();
-        //const encryptedPassword = bcrypt.hashSync(user.password, salt);
-        const encryptedPassword = user.password;
-        console.log('INSERT INTO test_t (id,password) VALUES ("' + user.userid + '","' + encryptedPassword + '")');
-        connection.query('INSERT INTO test_t (id,password) VALUES ("' + user.userid + '","' + encryptedPassword + '")', user, function (err, row2) {
-          if (err) throw err;
-        });
-        res.json({
-          success: true,
-          message: 'Sign Up Success!'
-        })
+    connection.query(
+      'SELECT id \
+      FROM accounts \
+      WHERE id = "' + user.userid + '";', 
+      function (err, row) {
+        if (row.length==0){ // If the ID is not already taken
+          if (user.number == undefined) {
+            address = 0;
+          }
+          else {
+            address = user.number;
+          }
+          console.log('SELECT id \
+          FROM accounts\
+          WHERE addr = ' + address +';');
+          connection.query(
+            'SELECT id \
+            FROM accounts\
+            WHERE addr = ' + address +';',
+            function (err,row2) {
+              if (row2.length == 0) { // If the phone number is not already taken
+                // Hash password
+                const salt = bcrypt.genSaltSync();
+                var encryptedPassword = bcrypt.hashSync(user.password, salt);
+                encryptedPassword = user.password;
+                // If not already given, generate phone number
+                if (address == 0) {
+                  address = newAddress();
+                }
+                // If username is not given, put default name
+                if (user.name == undefined) {
+                  username = "Shy Frodo";
+                }
+                else {
+                  username = user.name;
+                }
+                // Insert into database
+                connection.query(
+                  'INSERT INTO accounts (id,addr,password,name) \
+                  VALUES ("' + user.userid + '",'+ address + ',"' + encryptedPassword + '","' + username + '")', user, function (err, row2) {
+                  if (err) throw err;
+                });
+                res.json({
+                  success: true,
+                  message: '회원가입에 성공했습니다! 입력한 정보로 로그인해주세요.'
+                })
+              }  
+              else {
+                res.json({
+                  success: false,
+                  message: '이미 존재하는 번호입니다.'
+                })
+              }              
+            }
+          );
+          
       }
       else {
         res.json({
           success: false,
-          message: 'Sign Up Failed Please use another ID'
+          message: '이미 존재하는 아이디입니다.'
         })
       }
     });
     
+  }
+);
+
+function checkAddress(addr_check) {
+  return new Promise(function(resolve, reject) {
+    connection.query('SELECT id FROM accounts WHERE addr='+addr_check+';', function(err,row) {
+      if (row.length==0) {
+        resolve(true);
+      }
+      else {
+        resolve(false);
+      }
+    })
   });
+}
+
+async function newAddress() {
+  do {
+    var synth_address = 1200000000 + Math.floor(Math.random() * 100000000);
+    var isUnique = await checkAddress(synth_address);
+  } while (!isUnique);
+  return synth_address;
+}
+
+
 
 var server = app.listen(3000, function(){
     console.log("Express server has started on port 3000")

@@ -13,6 +13,9 @@
       </div>
       <button v-on:click="signUp" class="btn">가입하기!</button>
     </div>
+    <div id="page-link">
+      <router-link to="login">로그인하러 가기</router-link>
+    </div>
   </div>
 </template>
 
@@ -45,16 +48,18 @@ export default {
         alert("두 비밀번호가 일치하지 않습니다.");
         return;
       }
-      let modifiedNumber = this.user.number.split("-").join("")
-      let numError = !isNumeric(modifiedNumber);
-      if (numError) {
-        alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
-        return;
-      }
-      let phone_num = parseInt(modifiedNumber)
-      if (phone_num < 1200000000 || phone_num >= 1300000000) {
-        alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
-        return;
+      if (this.user.number != "") {
+        let modifiedNumber = this.user.number.split("-").join("")
+        let numError = !isNumeric(modifiedNumber);
+        if (numError) {
+          alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
+          return;
+        }
+        let phone_num = parseInt(modifiedNumber)
+        if (phone_num < 1200000000 || phone_num >= 1300000000) {
+          alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
+          return;
+        }
       }
       axios.post('http://localhost:3000/signUp', { 
         id: this.user.id,
@@ -120,5 +125,10 @@ a {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+}
+#page-link {
+  margin-top: 5px;
+  margin-bottom: 45px;
+  color: #BF9000;
 }
 </style>
