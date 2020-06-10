@@ -66,8 +66,11 @@ a {
 #app-index {
   height: 100%;
   background-color: #FFF2CC;
+  overflow: auto;
 }
 #page-link {
   margin-top: 5px;
+  margin-bottom: 45px;
+  color: #BF9000;
 }
 </style>
