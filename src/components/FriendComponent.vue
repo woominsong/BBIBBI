@@ -1,6 +1,20 @@
 <template>
   <div style="height:100vh-150px;">
-    Friends
+    <ul>
+      <li v-for="data in friends" v-bind:key="data.id" style="width: 100%; margin:0;">
+        <div class="grid friend">
+          <div class="friend-profile">
+            <img class="friend-profile-photo" src="../assets/img/profile/0.png"/>
+          </div>
+          <div class="friend-name">
+            <p style="display: inline-block; align-self: flex-end;">{{data.name}}</p>
+          </div>
+          <div class="friend-address">
+            <p style="display: inline-block; align-self: flex-top;">{{data.address}}</p>
+          </div>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -12,7 +26,13 @@ export default {
   },
   data() {
     return {
-      friends: []
+      friends: [{
+        name: '홍길동',
+        address: '012-1232-3434'
+      },{
+        name: '홍길동',
+        address: '012-1232-3434'
+      }]
     }
   },
   beforeMount() {
@@ -32,9 +52,42 @@ ul {
 }
 li {
   display: inline-block;
-  margin: 0 10px;
+  margin: 0 0px;
 }
 a {
   color: #42b983;
+}
+p {
+  margin-bottom: 0;
+}
+.friend {
+  height: 80px;
+  border-bottom-width: 10px;
+  border-color: red;
+}
+.friend-profile {
+  grid-row: 1 / 3;
+  grid-column: 1;
+}
+.friend-profile-photo {
+  margin: 10px;
+  width: 60px;
+  height: 60px;
+}
+.friend-name {
+  margin-left: 10px;
+  margin-top: 10px;
+  font-size: 22px;
+  display: flex;
+}
+.friend-address {
+  margin-left: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  display: flex;
+}
+.grid {
+  display: grid;
+  grid-template: 5fr 4fr / 80px 1fr;
 }
 </style>
