@@ -2,7 +2,8 @@ CREATE TABLE bbibbi_db.accounts (
 id VARCHAR(45) PRIMARY KEY,
 addr INT UNIQUE,
 password VARCHAR(60) NOT NULL,
-name VARCHAR(45)
+name VARCHAR(45),
+salt VARCHAR(30)
 );
 
 CREATE TABLE bbibbi_db.friends (

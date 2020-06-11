@@ -50,9 +50,8 @@ export default {
       }
       let phone_num = "";
       if (this.user.number != "") {
-        let modifiedNumber = this.user.number.split("-").join("")
-        let numError = !isNumeric(modifiedNumber);
-        if (numError) {
+        let modifiedNumber = this.user.number.split("-").join("");
+        if (!isNumeric(modifiedNumber)) {
           alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
           return;
         }
@@ -62,18 +61,16 @@ export default {
           return;
         }
       }
-      axios.post('http://localhost:3000/signUp', { 
+      axios.post('http://localhost:3000/signup', { 
         id: this.user.id,
         password: this.user.password,
         name: this.user.name,
         number: phone_num
       })
       .then((res) => {
+        alert(res.data.message);
         if (res.data.success == true) {
-          alert(res.data.message);
-        }
-        if (res.data.success == false) {
-          alert(res.data.message);
+          this.$router.push('login');
         }
       })
       .catch(function (error) {
@@ -124,10 +121,6 @@ a {
   height: 50px;
   background-color: #FFC000;
   font-size: 25px;
-}
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
 }
 #page-link {
   margin-top: 5px;

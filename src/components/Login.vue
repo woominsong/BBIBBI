@@ -33,16 +33,15 @@ export default {
         alert("아이디와 비밀번호를 입력해주세요!");
         return;
       }
-      axios.post('http://localhost:3000/logIn', { 
+      axios.post('http://localhost:3000/login', { 
         id: this.user.id,
         password: this.user.password
       })
       .then((res) => {
         if (res.data.success == true) {
-          alert(res.data.message);
-          //this.$router.push('/login') 
+          this.$router.push('../login') 
         }
-        if (res.data.success == false) {
+        else {
           alert(res.data.message);
         }
       })
