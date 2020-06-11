@@ -10,7 +10,7 @@ export default new Router({
       path: "/",
       alias: "/index",
       name: "index",
-      component: () => import("../components/AppIndex"),
+      component: () => import("../views/AppIndex"),
       children: [
         {
           path: "/",
@@ -28,7 +28,7 @@ export default new Router({
     {
       path: "/corr",
       name: "corr",
-      component: () => import("../components/HelloWorld")
+      component: () => import("../views/HelloWorld")
     }
   ]
 });

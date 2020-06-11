@@ -39,7 +39,7 @@ export default {
       })
       .then((res) => {
         if (res.data.success == true) {
-          this.$router.push('../login') 
+          this.$router.push('../corr') 
         }
         else {
           alert(res.data.message);

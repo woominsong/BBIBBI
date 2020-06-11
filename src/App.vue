@@ -10,9 +10,6 @@
 </template>
 
 <script>
-//import HelloWorld from './components/HelloWorld.vue'
-//import LogIn from './components/Login.vue'
-//import Index from './components/AppIndex.vue'
 
 export default {
   name: 'App',
