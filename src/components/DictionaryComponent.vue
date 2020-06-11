@@ -1,5 +1,5 @@
 <template>
-  <div style="height:100%">
+  <div style="height:100vh-150px;">
     dictionary
   </div>
 </template>

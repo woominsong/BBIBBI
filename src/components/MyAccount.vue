@@ -1,18 +1,14 @@
 <template>
-  <div id="menu-bar">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <!--div id="my-account" style="display: table">
-      <div style="display:table-row">
-        <img id="my-profile" src="../assets/img/profile/0.png" style="display:table-cell;"/>
-      </div>      
-    </div-->
-    <MyAccount/>
-    <div id="menu-buttons">
-      <button v-on:click="component = 'friends-comp'" class="btn">친구 목록</button>
-      <button v-on:click="component = 'chatroom-comp'" class="btn">채팅방</button>
-      <button v-on:click="component = 'dictionary-comp'" class="btn">삐삐 사전</button>
+  <div id="my-account" class="grid">
+    <div id="my-profile">
+      <img id="my-profile-photo" src="../assets/img/profile/0.png"/>
     </div>
-    <component :is="component"></component>
+    <div id="my-name">
+      <p style="display: inline-block; align-self: flex-end;">Name</p>
+    </div>
+    <div id="my-address">
+      <p style="display: inline-block; align-self: flex-top;">Address</p>
+    </div>
   </div>
 </template>
 
@@ -21,20 +17,16 @@ import axios from 'axios'
 /*import FriendComponent from './FriendComponent'
 import AddressComponent from './ChatroomComponent'
 import DictionaryComponent from './DictionaryComponent'*/
-import MyAccount from './MyAccount'
-
 
 export default {
-  name: 'menu',
-  components: {
-    'friends-comp': ()=>import('./FriendComponent'),
-    'chatroom-comp': ()=>import('./ChatroomComponent'),
-    'dictionary-comp': ()=>import('./DictionaryComponent'),
-    MyAccount
-  },
+  name: 'login',
   data: function () {
     return {
-      component: 'friends-comp'
+      user: {
+        userName: '',
+        userAddr: '',
+        userImg: 1
+      }
     }
   },
   methods: {
@@ -59,6 +51,9 @@ export default {
         alert(error)
       })
     }
+  },
+  beforeMount() {
+    this.myAcc();
   }
 }
 </script>
@@ -79,6 +74,9 @@ li {
 a {
   color: #42b983;
 }
+p {
+  margin-bottom: 0;
+}
 .btn {
   width: 33.3%;
   height: 50px;
@@ -98,8 +96,28 @@ a {
   height: 100px;
 }
 #my-profile {
+  grid-row: 1 / 3;
+  grid-column: 1;
+}
+#my-profile-photo {
   margin: 10px;
   width: 80px;
   height: 80px;
+}
+#my-name {
+  margin-left: 10px;
+  margin-top: 10px;
+  font-size: 30px;
+  display: flex;
+}
+#my-address {
+  margin-left: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  display: flex;
+}
+.grid {
+  display: grid;
+  grid-template: 3fr 2fr / 100px 1fr;
 }
 </style>
