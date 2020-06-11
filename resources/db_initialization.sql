@@ -3,7 +3,8 @@ id VARCHAR(45) PRIMARY KEY,
 addr INT UNIQUE,
 password VARCHAR(60) NOT NULL,
 name VARCHAR(45),
-salt VARCHAR(30)
+salt VARCHAR(30),
+prof_img INT
 );
 
 CREATE TABLE bbibbi_db.friends (

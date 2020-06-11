@@ -39,7 +39,7 @@ export default {
       })
       .then((res) => {
         if (res.data.success == true) {
-          this.$router.push('../corr') 
+          this.$router.push('../main') 
         }
         else {
           alert(res.data.message);

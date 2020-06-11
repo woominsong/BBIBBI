@@ -16,6 +16,13 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(cors());
 
+/************************
+ *                      *
+ *   Token Management   *
+ *                      *
+ ************************/
+var tokens = [];
+var ids = [];
 
 /************************
  *                      *
@@ -99,10 +106,12 @@ app.post('/signup', function (req, res) {
                 else {
                   username = user.name;
                 }
+                // Select random profile photo
+                profile = Math.floor(Math.random()*4);
                 // Insert into database
                 connection.query(
-                  'INSERT INTO accounts (id,addr,password,name,salt) \
-                  VALUES ("' + user.userid + '",'+ address + ',"' + encryptedPassword + '","' + username + '","' + salt + '")', user, function (err, row2) {
+                  'INSERT INTO accounts (id,addr,password,name,salt,prof_img) \
+                  VALUES ("' + user.userid + '",'+ address + ',"' + encryptedPassword + '","' + username + '","' + salt + '",'+ profile +')', user, function (err, row2) {
                   if (err) throw err;
                 });
                 res.json({
@@ -165,8 +174,12 @@ app.post('/login', async function (req, res) {
           console.log("Login fail.");
         }
         else {
+          login_token = bcrypt.genSaltSync();
+          tokens.push(login_token);
+          ids.push(user.userid);
           res.json({
-            success: true
+            success: true,
+            token: login_token
           })
           console.log("Login success. Welcome back, "+user.userid+"!");
         }

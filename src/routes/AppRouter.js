@@ -26,9 +26,17 @@ export default new Router({
       ]
     },
     {
-      path: "/corr",
-      name: "corr",
-      component: () => import("../views/HelloWorld")
+      path: "/main",
+      name: "main",
+      component: () => import("../views/AppMain"),
+      children: [
+        {
+          path: "/",
+          alias: "/hello-world",
+          name: "placeholder",
+          component: () => import("../components/HelloWorld")
+        }
+      ]
     }
   ]
 });
