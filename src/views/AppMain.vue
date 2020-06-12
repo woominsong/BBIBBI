@@ -1,7 +1,7 @@
 <template>
   <div id="app-main" style="display: table">
-    <div style="display: table-row">
-      <AppMenu id="app-menu"></AppMenu>
+    <div style="display: table-row; padding: 0px;">
+      <AppMenu id="app-menu" style="margin: 0px; padding: 0px;"></AppMenu>
       <router-view id="contents"></router-view>
     </div>    
   </div>
@@ -27,7 +27,7 @@ export default {
     }
   },
   async beforeMount() {
-    await this.checkAuth();
+    //this.checkAuth();
   }
 }
 </script>

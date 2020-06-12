@@ -56,8 +56,12 @@ else {
 
 // Test token action
 app.post('/auth', function(req, res){
-  id = token2id(req.body.token);
-  if (auth) {
+  id = jwt.verify(req.body.token, secretObj.secret).catch((err) => {
+    console.log(err);
+    res.send(false);
+  })
+  id = id.id;
+  if (id) {
     res.send(true);
   }
   else {
@@ -181,7 +185,7 @@ app.post('/login', async function (req, res) {
             },
             secretObj.secret ,    // 비밀 키
             {
-              expiresIn: '5m'
+              expiresIn: '1h'
             }
           )
           res.json({
@@ -242,6 +246,147 @@ app.post('/my-info', async function (req, res) {
 }
 );
 
+// MyInfo request
+app.post('/add-friend', async function (req, res) {
+  console.log("AddFriend called.");
+  userId = token2id(req.body.token);
+  
+  // Check for authentication
+  if (!userId) {
+    console.log("Invalid token");
+    res.json({
+      success: false,
+      verified: false
+    });
+    return;
+  }
+
+  // Query friend account
+  query = 'SELECT id FROM accounts ';
+  if (req.body.id == '') {
+    query = query + 'WHERE addr = "'+req.body.number+'";';
+  }
+  else if (req.body.number == '') {
+    query = query + 'WHERE id = "'+req.body.id+'";';
+  }
+  else {
+    query = query + 'WHERE addr = '+req.body.number+' AND id = "'+req.body.id+'";';
+  }
+  console.log(query);
+  connection.query(
+    query,
+    function (err,row) {
+      if (err) {
+        console.log("[ERROR] DB Error");
+        res.json({
+          success: false,
+          verified: true,
+          message: "DB 에러가 발생했습니다."
+        })
+        return;
+      }
+      // Such user does not exist
+      if (row.length == 0) {
+        console.log("The given user is not in database.");;
+        res.json({
+          success: false,
+          verified: true,
+          message: "존재하지 않는 사용자입니다."
+        })
+      }
+      else {
+        friend_id = row[0].id;
+        console.log("User "+friend_id+" found!");
+        // Check if already added as friends
+        connection.query('SELECT * FROM friends WHERE my_id="'+userId+'" AND friend_id="'+friend_id+'";',
+        function (err, row1) {
+          if (err) {
+            console.log("[ERROR] DB Error");
+            res.json({
+              success: false,
+              verified: true,
+              message: "DB 에러가 발생했습니다."
+            })
+            return;
+          }
+          if (row1.length != 0) {
+            console.log("The given user is already friended.");;
+            res.json({
+              success: false,
+              verified: true,
+              message: "이미 친구로 추가된 사용자입니다."
+            })
+          } 
+          else {
+            console.log("You are not already friends.");
+            // Check if a chatroom already exists
+            connection.query('SELECT chatroom_id FROM chatrooms WHERE p1_id="'+friend_id+'" AND p2_id="'+userId+'";',
+            async function (err, row2) {
+              if (err) {
+                console.log("[ERROR] DB Error");
+                res.json({
+                  success: false,
+                  verified: true,
+                  message: "DB 에러가 발생했습니다."
+                })
+                return;
+              }
+              var friend_chatroom_id;
+              if (row2.length == 0) { // If there is no existing chatroom
+                console.log("Chatroom does not exist.");
+                friend_chatroom_id = await newChatroomId();
+              }
+              else {
+                console.log("Chatroom does exist.");
+                friend_chatroom_id = row2[0].chatroom_id;
+              }
+              // Add friend
+              connection.query('INSERT INTO friends(my_id,friend_id,chatroom_id) VALUES ("'+userId+'","'+friend_id+'","'+friend_chatroom_id+'");',
+              function (err, row3) {
+                if (err) {
+                  console.log("[ERROR] DB Error");
+                  res.json({
+                    success: false,
+                    verified: true,
+                    message: "DB 에러가 발생했습니다."
+                  })
+                  return;
+                }
+                // If chatroom not added yet, add chatroom
+                if (row2.length == 0){
+                  console.log("Add chatroom.");
+                  connection.query('INSERT INTO chatrooms(chatroom_id,p1_id,p2_id) VALUES ("'+friend_chatroom_id+'","'+userId+'","'+friend_id+'");',
+                  function (err, row4){
+                    if (err) {
+                      console.log("[ERROR] DB Error");
+                      res.json({
+                        success: false,
+                        verified: true,
+                        message: "DB 에러가 발생했습니다."
+                      })
+                      return;
+                    }
+                    res.json({
+                      success: true
+                    })
+                  })
+                }
+                // Else, finished
+                else {
+                  console.log("Well done!");
+                  res.json({
+                    success: true
+                  })
+                }                
+              });
+            });
+          }
+        });
+      }
+  });
+}
+);
+
 /************************
  *                      *
  *   Helper Functions   *
@@ -274,6 +419,20 @@ async function newAddress() {
   return synth_address;
 }
 
+// Create a new chatroom id
+function newChatroomId() {
+  return new Promise(function(resolve, reject) {
+    connection.query('SELECT max(chatroom_id) AS m FROM chatrooms;', function(err,row) {
+      if (row.length==0) {
+        resolve(0);
+      }
+      else {
+        resolve(row[0].m+1);
+      }
+    })
+  });
+}
+
 // Query the salt for a certain id
 function getSalt(id_check) {
   return new Promise(function(resolve, reject) {
@@ -290,10 +449,9 @@ function getSalt(id_check) {
 
 // Verify token
 function token2id(tk) {
-  if (tk=="init") {
+  if (tk == 'init') {
     return false;
   }
-  console.log(tk);
   res = jwt.verify(tk, secretObj.secret);
   if (res) {
     return res.id;

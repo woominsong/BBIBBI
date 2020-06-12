@@ -35,6 +35,11 @@ export default new Router({
           alias: "/hello-world",
           name: "placeholder",
           component: () => import("../components/HelloWorld")
+        },
+        {
+          path: "/add-friend",
+          name: "add-friend",
+          component: () => import("../components/AddFriend")
         }
       ]
     }

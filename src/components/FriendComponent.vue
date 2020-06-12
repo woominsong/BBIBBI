@@ -1,5 +1,6 @@
 <template>
-  <div style="height:100vh-150px;">
+  <div style="height: calc(~'100vh - 50px');">
+    <button class="btn" v-on:click="routeNewFriends()">+ 친구 추가</button>
     <ul>
       <li v-for="data in friends" v-bind:key="data.id" style="width: 100%; margin:0;">
         <div class="grid friend">
@@ -22,7 +23,12 @@
 export default {
   name: 'FriendComponent',
   methods: {
-    initFriends: async function () {}
+    initFriends: function () {},
+    routeNewFriends: function () { 
+      if (this.$route.name != "add-friend") {
+        this.$router.push('/add-friend'); 
+      }
+    }
   },
   data() {
     return {
@@ -89,5 +95,11 @@ p {
 .grid {
   display: grid;
   grid-template: 5fr 4fr / 80px 1fr;
+}
+.btn {
+  background-color: #FFC000;
+  font-size: 20px;
+  margin-top: 10px;
+  width: 300px;
 }
 </style>

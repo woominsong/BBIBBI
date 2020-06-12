@@ -1,15 +1,18 @@
 <template>
   <div class="hello">
-    Hello, world!
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <div>
+      asdf
+    </div>
+    <div>
+      asdf
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
+  name: 'HelloWorld'
 }
 </script>
 

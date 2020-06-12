@@ -10,14 +10,22 @@ prof_img INT
 CREATE TABLE bbibbi_db.friends (
 my_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
 friend_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
+chatroom_id INT,
 PRIMARY KEY (my_id, friend_id)
 );
 
 CREATE TABLE bbibbi_db.chats (
-from_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
-to_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
+chatroom_id INT,
 sent_at DATETIME,
-content INT
+send_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
+content BIGINT
+);
+
+CREATE TABLE bbibbi_db.chatrooms (
+chatroom_id INT PRIMARY KEY,
+p1_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
+p2_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
+latest_chat BIGINT
 );
 
 CREATE TABLE bbibbi_db.dictionary (

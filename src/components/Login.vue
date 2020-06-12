@@ -52,7 +52,7 @@ export default {
       })
     },
     logOut: function() {
-      this.$cookie.set('user',"init",'5m');
+      this.$cookie.set('user',"init",'1h');
     }
   },
   beforeMount() {

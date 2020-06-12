@@ -7,7 +7,7 @@
       <button v-on:click="component = 'chatroom-comp'" class="btn">채팅방</button>
       <button v-on:click="component = 'dictionary-comp'" class="btn">삐삐 사전</button>
     </div>
-    <component :is="component"></component>
+    <component :is="component" style="height: calc(100vh - 150px)"></component>
   </div>
 </template>
 
