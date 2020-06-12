@@ -3,7 +3,7 @@
     <button class="btn" v-on:click="routeNewFriends()">+ 친구 추가</button>
     <ul>
       <li v-for="data in friends" v-bind:key="data.id" style="width: 100%; margin:0;">
-        <div class="grid friend">
+        <button class="grid friend">
           <div class="friend-profile">
             <img class="friend-profile-photo" src="../assets/img/profile/0.png"/>
           </div>
@@ -13,7 +13,7 @@
           <div class="friend-address">
             <p style="display: inline-block; align-self: flex-top;">{{'TEL: 012-'+("000" + Math.floor((data.addr-1200000000)/10000)).slice(-4)+'-'+("000" + data.addr%10000).slice(-4)}}</p>
           </div>
-        </div>
+        </button>
       </li>
     </ul>
   </div>
@@ -89,9 +89,11 @@ p {
   margin-bottom: 0;
 }
 .friend {
-  height: 80px;
-  border-bottom-width: 10px;
-  border-color: red;
+  height: 81px;
+  width: 100%;
+  border: none;
+  margin-bottom: 1px;
+  background-color: #FFF2CC;
 }
 .friend-profile {
   grid-row: 1 / 3;
@@ -123,5 +125,6 @@ p {
   font-size: 20px;
   margin-top: 10px;
   width: 300px;
+  margin-bottom: 5px;
 }
 </style>
