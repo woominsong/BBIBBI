@@ -5,11 +5,11 @@
       <h3 id="sign-up-header">회원가입</h3>
       <p>* 표시가 된 항목은 필수항목입니다.</p>
       <div class="form-group">
-        <input type="text" name="id" id="id" class="form-control" placeholder="* 아이디" v-model="user.id"/>
-        <input type="password" name="password" id="password" class="form-control" placeholder="* 비밀번호" v-model="user.password"/>
-        <input type="password" name="password-re" id="password-re" class="form-control" placeholder="* 비밀번호 확인" v-model="user.passwordRe"/>
-        <input type="text" name="name" id="name" class="form-control" placeholder="이름" v-model="user.name"/>
-        <input type="text" name="number" id="number" class="form-control" placeholder="원하는 번호 012-XXXX-XXXX" v-model="user.number"/>
+        <input type="text" name="id" id="id" class="form-control" placeholder="* 아이디" v-model="user.id" v-on:keyup.enter="signUp"/>
+        <input type="password" name="password" id="password" class="form-control" placeholder="* 비밀번호" v-model="user.password" v-on:keyup.enter="signUp"/>
+        <input type="password" name="password-re" id="password-re" class="form-control" placeholder="* 비밀번호 확인" v-model="user.passwordRe" v-on:keyup.enter="signUp"/>
+        <input type="text" name="name" id="name" class="form-control" placeholder="이름" v-model="user.name" v-on:keyup.enter="signUp"/>
+        <input type="text" name="number" id="number" class="form-control" placeholder="원하는 번호 012-XXXX-XXXX" v-model="user.number" v-on:keyup.enter="signUp"/>
       </div>
       <button v-on:click="signUp" class="btn">가입하기!</button>
     </div>
