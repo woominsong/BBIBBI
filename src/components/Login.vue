@@ -4,8 +4,8 @@
     <div id="log-in-form">
       <h3 id="log-in-header">로그인</h3>
       <div class="form-group">
-        <input type="text" name="id" id="id" class="form-control" placeholder="아이디" v-model="user.id"/>
-        <input type="password" name="password" id="password" class="form-control" placeholder="비밀번호" v-model="user.password"/>
+        <input type="text" name="id" id="id" class="form-control" placeholder="아이디" v-model="user.id" v-on:keyup.enter="logIn"/>
+        <input type="password" name="password" id="password" class="form-control" placeholder="비밀번호" v-model="user.password" v-on:keyup.enter="logIn"/>
       </div>
       <button v-on:click="logIn" class="btn">로그인!</button>
     </div>
