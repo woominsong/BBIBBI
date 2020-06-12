@@ -1,9 +1,9 @@
 <template>
-  <div id="app-main" style="display: table">
-    <div style="display: table-row; padding: 0px;">
+  <div id="app-main" style="padding: 0; width: 100vw; height: 100vh;">
+    <div style="margin: 0px; padding: 0px; width: 100vw; display: grid; grid-template-columns: 3fr 7fr;">
       <AppMenu id="app-menu" style="margin: 0px; padding: 0px;"></AppMenu>
-      <router-view id="contents"></router-view>
-    </div>    
+      <router-view id="contents" style="width: 100%"></router-view>
+    </div>
   </div>
 </template>
 
@@ -54,7 +54,7 @@ a {
 }
 #app-main {
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   background-color: #FFF2CC;
   margin: 0px;
 }
@@ -62,13 +62,15 @@ a {
   height: 100%;
   width: 30vw;
   min-width: 350px;
-  display: table-cell;
+  grid-column: 1;
   margin: 0px;
   padding: 0px;
 }
 #contents {
-  height: 100px;
-  width: 80vw;
-  display: table-cell;
+  height: 100vh;
+  width: 70vw;
+  margin: 0px; 
+  padding: 0px;
+  grid-column: 2;
 }
 </style>

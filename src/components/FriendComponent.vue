@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(~'100vh - 50px');">
+  <div >
     <button class="btn" v-on:click="routeNewFriends()">+ 친구 추가</button>
     <ul>
       <li v-for="data in friends" v-bind:key="data.id" style="width: 100%; margin:0;">
@@ -58,7 +58,11 @@ export default {
       }
     },
     clickFriend: function(fid, fname){
-      alert("friend id: "+fid+", name: "+fname);
+      //alert("friend id: "+fid+", name: "+fname);
+      console.log(''+fid+''+fname);
+      if (this.$route.path != "/chat/"+fid) {
+        this.$router.push('/chat/'+fid);
+      }
     }
   },
   data() {

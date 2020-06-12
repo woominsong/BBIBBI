@@ -1,12 +1,15 @@
 <template>
-  <div class="add-friend">
+  <div class="chatroom">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <div id="log-in-form">
-      <h3 id="log-in-header">친구 추가하기</h3>
-      <img id="friend-img" src="../assets/img/friend-img.png">
-      <input type="text" name="add-id" id="add-id" class="form-control" placeholder="아이디로 추가하기" v-model="user.id" v-on:keyup.enter="addFriend()"/>
-      <input type="text" name="add-addr" id="add-addr" class="form-control" placeholder="전화번호로 추가하기 012-XXXX-XXXX" v-model="user.number" v-on:keyup.enter="addFriend()"/>
-      <button v-on:click="addFriend" class="btn">추가하기</button>
+    <div id="chat-heading">
+      <h3 id="log-in-header">{{friend.name}}</h3>
+      <p style="font-size: 20px;">{{friend.number}}</p>
+    </div>
+    <div id="chat-content" style="background-color:blue; border: 0;">
+      asdf
+    </div>
+    <div id="chat-sender" style="background-color:red;">
+      asdf
     </div>
   </div>
 </template>
@@ -22,9 +25,10 @@ export default {
   name: 'HelloWorld',
   data() {
     return {
-      user: {
+      friend: {
         id: '',
-        number: ''
+        name: '친구 이름',
+        number: '012-1212-3434'
       }
     }
   },
@@ -81,7 +85,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
-  margin: 40px 0 0;
+  margin: 0;
 }
 ul {
   list-style-type: none;
@@ -94,8 +98,10 @@ li {
 a {
   color: #42b983;
 }
-.add-friend {
+.chatroom {
   background-color: white;
+  display: grid;
+  grid-template: 89px 1fr 150px / 1fr;
 }
 #log-in-form {
   margin: auto;
@@ -129,5 +135,22 @@ a {
 #friend-img {
   margin: 30px;
   width: 250px;
+}
+#chat-heading {
+  /*background-color: red;*/
+  border-bottom: solid;
+  border-bottom-width: 3px;
+  border-bottom-color: #BFBFBF;
+  margin-bottom: 0px;
+  grid-row: 1 / 2;
+  grid-column: 1;
+}
+#chat-content {
+  grid-row: 2 / 3;
+  grid-column: 1;
+}
+#chat-sender {
+  grid-row: 3 / 4;
+  grid-column: 1;
 }
 </style>

@@ -40,6 +40,11 @@ export default new Router({
           path: "/add-friend",
           name: "add-friend",
           component: () => import("../components/AddFriend")
+        },
+        {
+          path: "/chat/:id",
+          name: "chat",
+          component: () => import("../components/ChatComponent")
         }
       ]
     }
