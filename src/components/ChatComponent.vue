@@ -3,13 +3,24 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <div id="chat-heading">
       <h3 id="log-in-header">{{friend.name}}</h3>
-      <p style="font-size: 20px;">{{friend.number}}</p>
+      <p style="font-size: 20px; margin:0;">{{friend.number}}</p>
     </div>
-    <div id="chat-content" style="background-color:blue; border: 0;">
-      asdf
+    <div id="chat-content" style="border: 0;">
+      <ul style="width: 100%; margin: auto; margin-bottom: 10px;">
+      <li v-for="chat in chats" v-bind:key="chat.send_at" style="width: 100%; margin: 0px;">
+        <div v-if="chat.send" class="left-p sent-message" style="display: grid; grid-template: 1fr / 1fr; margin: auto;">
+          <p style="grid-column: 1;" class="right">{{chat.content}}</p>
+        </div>
+        <div v-else class="received-message" style="display: grid; grid-template: 1fr / 60px 1fr; margin: auto;">
+          <img src="../assets/img/profile/0.png" style="grid-column: 1; width: 50px; margin: auto;"/>
+          <p style="grid-column: 2;" class="left">{{chat.content}}</p>
+        </div>
+      </li>
+    </ul>
     </div>
-    <div id="chat-sender" style="background-color:red;">
-      asdf
+    <div id="chat-sender">
+      <input type="text" name="msg-send" id="msg-send" class="form-control" placeholder="15자 이내의 숫자로 메시지를 입력하세요." v-model="msg_send" v-on:keyup.enter="sendMessage()"/>
+      <button v-on:click="sendMessage()" class="btn">보내기</button>
     </div>
   </div>
 </template>
@@ -29,7 +40,17 @@ export default {
         id: '',
         name: '친구 이름',
         number: '012-1212-3434'
-      }
+      },
+      chats: [{
+        send: false,
+        sent_at: '2017-06-29 17:54:04',
+        content: 111111111111111
+      },{
+        send: true,
+        sent_at: '2017-06-29 17:54:05',
+        content: 222222222222222
+      }],
+      msg_send: ''
     }
   },
   methods: {
@@ -77,7 +98,8 @@ export default {
       .catch(function (error) {
         alert(error)
       })
-    }
+    },
+    sendMessage: function(){alert(this.msg_send);}
   }
 }
 </script>
@@ -85,7 +107,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
-  margin: 0;
+  margin-top: 5px;
 }
 ul {
   list-style-type: none;
@@ -98,10 +120,20 @@ li {
 a {
   color: #42b983;
 }
+p.left {
+  margin: auto;
+  margin-left: 10px;
+  font-size: 30px;
+}
+p.right {
+  margin: auto;
+  margin-right: 10px;
+  font-size: 30px;
+}
 .chatroom {
   background-color: white;
   display: grid;
-  grid-template: 89px 1fr 150px / 1fr;
+  grid-template: 100px 1fr 100px / 1fr;
 }
 #log-in-form {
   margin: auto;
@@ -115,17 +147,18 @@ a {
 .form-control{
   font-size: 25px;
   height: 50px;
-  width: 450px;
-  margin-top: 20px;
+  width: auto;
   border-color: #FFC000;
   border-width: 3px;
 }
 .btn {
-  margin-top: 20px;
   width: 140px;
   height: 50px;
   background-color: #FFC000;
   font-size: 25px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin: auto; 
 }
 #page-link {
   margin-top: 5px;
@@ -138,19 +171,47 @@ a {
 }
 #chat-heading {
   /*background-color: red;*/
+  height: 100%;
+  width: 100%;
   border-bottom: solid;
   border-bottom-width: 3px;
   border-bottom-color: #BFBFBF;
-  margin-bottom: 0px;
+  margin: auto;
   grid-row: 1 / 2;
   grid-column: 1;
 }
 #chat-content {
   grid-row: 2 / 3;
   grid-column: 1;
+  width: 100%;
+  margin: auto;
+  margin-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 #chat-sender {
   grid-row: 3 / 4;
   grid-column: 1;
+  display: grid;
+  grid-template: 1fr / 1fr 160px; 
+  margin: auto;
+  width: 100%;
+  height: 100%; 
+  border-top: solid;
+  border-top-color: #BFBFBF;
+  border-top-width: 3px;
+}
+#msg-send {
+  grid-column: 1;
+  grid-row: 1;
+  margin: auto; 
+  margin-left: 10px;
+  margin-right: 0px;
+}
+.sent-message {
+  height: 60px;
+}
+.received-message {
+  height: 60px;
 }
 </style>
