@@ -39,7 +39,8 @@ export default {
       })
       .then((res) => {
         if (res.data.success == true) {
-          this.$router.push('../main') 
+          this.$cookie.set('user',res.data.token,'5m');
+          this.$router.push('../main')
         }
         else {
           alert(res.data.message);

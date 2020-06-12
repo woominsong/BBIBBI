@@ -10,7 +10,7 @@
 <script>
 import AppMenu from '../components/AppMenu'
 export default {
-  name: 'AppIndex',
+  name: 'AppMain',
   components: {
     AppMenu
   }

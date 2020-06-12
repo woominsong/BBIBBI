@@ -30,6 +30,6 @@ a {
   color: #42b983;
 }
 .hello {
-  background-color: skyblue;
+  background-color: white;
 }
 </style>

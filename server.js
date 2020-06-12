@@ -16,13 +16,9 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(cors());
 
-/************************
- *                      *
- *   Token Management   *
- *                      *
- ************************/
-var tokens = [];
-var ids = [];
+// JWT-related variables
+const jwt = require("jsonwebtoken");
+const secretObj = require("./src/config/jwt");
 
 /************************
  *                      *
@@ -59,8 +55,15 @@ else {
  ************************/
 
 // Handle requests
-app.get('/', function(req, res){
-    res.send('Hello World');
+app.post('/auth', function(req, res){
+  console.log(req.body.token);
+  auth = isAuth(req.body.token);
+  if (auth) {
+    res.send("인증 성공!");
+  }
+  else {
+    res.send("인증 실패!");
+  }
 });
 
 // Signup request
@@ -161,7 +164,7 @@ app.post('/login', async function (req, res) {
   else {
     const encryptedPassword = bcrypt.hashSync(user.password, salt);
     connection.query(
-      'SELECT id \
+      'SELECT id, name, addr, prof_img \
       FROM accounts \
       WHERE id = "' + user.userid + '"\
       AND password = "' + encryptedPassword +'";', 
@@ -174,12 +177,21 @@ app.post('/login', async function (req, res) {
           console.log("Login fail.");
         }
         else {
-          login_token = bcrypt.genSaltSync();
-          tokens.push(login_token);
-          ids.push(user.userid);
+          let token = jwt.sign({
+              id: row[0].id
+            },
+            secretObj.secret ,    // 비밀 키
+            {
+              expiresIn: '5m'
+            }
+          )
           res.json({
             success: true,
-            token: login_token
+            token: token,
+            id: row[0].id,
+            name: row[0].name,
+            addr: row[0].addr,
+            prof_img: row[0].prof_img
           })
           console.log("Login success. Welcome back, "+user.userid+"!");
         }
@@ -232,6 +244,17 @@ function getSalt(id_check) {
       }
     })
   });
+}
+
+// Verify token
+function isAuth(tk) {
+  resolved = jwt.verify(tk, secretObj.secret);
+  if(resolved){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 
 /************************

@@ -30,7 +30,15 @@ export default {
     }
   },
   methods: {
-    myAcc: function () {
+    tryAuth: function() {
+      axios.post('http://localhost:3000/auth', {
+        token: this.$cookie.get('user')
+      })
+      .then((res) => {
+        alert(res.data);
+      })
+    }
+    /*myAcc: function () {
       if (this.user.id == "" || this.user.password == "") {
         alert("아이디와 비밀번호를 입력해주세요!");
         return;
@@ -50,10 +58,11 @@ export default {
       .catch(function (error) {
         alert(error)
       })
-    }
+    }*/
   },
   beforeMount() {
-    this.myAcc();
+    //this.myAcc();
+    this.tryAuth();
   }
 }
 </script>

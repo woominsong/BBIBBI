@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+//import axios from 'axios'
 /*import FriendComponent from './FriendComponent'
 import AddressComponent from './ChatroomComponent'
 import DictionaryComponent from './DictionaryComponent'*/
@@ -25,7 +25,7 @@ import MyAccount from './MyAccount'
 
 
 export default {
-  name: 'menu',
+  name: 'app-menu',
   components: {
     'friends-comp': ()=>import('./FriendComponent'),
     'chatroom-comp': ()=>import('./ChatroomComponent'),
@@ -38,7 +38,7 @@ export default {
     }
   },
   methods: {
-    myAcc: function () {
+    /*myAcc: function () {
       if (this.user.id == "" || this.user.password == "") {
         alert("아이디와 비밀번호를 입력해주세요!");
         return;
@@ -52,13 +52,13 @@ export default {
           this.$router.push('../corr') 
         }
         else {
-          alert(res.data.message);
+          //alert(res.data.message);
         }
       })
       .catch(function (error) {
         alert(error)
       })
-    }
+    }*/
   }
 }
 </script>
