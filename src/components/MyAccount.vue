@@ -40,7 +40,7 @@ export default {
           }
         }
         this.userName = result.data.name,
-        this.userAddr = '012-'+Math.floor((result.data.addr-1200000000)/10000)+'-'+result.data.addr%10000,
+        this.userAddr = 'TEL: 012-'+("000" + Math.floor((result.data.addr-1200000000)/10000)).slice(-4)+'-'+("000" + result.data.addr%10000).slice(-4)
         this.userImg = result.data.prof_img;
       })
     }

@@ -11,7 +11,7 @@
             <p style="display: inline-block; align-self: flex-end;">{{data.name}}</p>
           </div>
           <div class="friend-address">
-            <p style="display: inline-block; align-self: flex-top;">{{data.address}}</p>
+            <p style="display: inline-block; align-self: flex-top;">{{'TEL: 012-'+("000" + Math.floor((data.addr-1200000000)/10000)).slice(-4)+'-'+("000" + data.addr%10000).slice(-4)}}</p>
           </div>
         </div>
       </li>
@@ -20,10 +20,38 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'FriendComponent',
   methods: {
-    initFriends: function () {},
+    initFriends: function () {
+      axios.post('http://localhost:3000/get-friends', { 
+        token: this.$cookie.get('user')
+      })
+      .then((result) => {
+        console.log(result.data);
+        if (!result.data.success) {
+          if(result.data.verified) {
+            alert(result.data.message);
+            return;
+          }
+          else {
+            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+            this.$router.push('/login');
+            return;
+          }
+        }
+        else {
+          this.friends = result.data.friends;
+          console.log("Successfully updated friends.");
+          console.log(this.friends);
+        }
+      })
+      .catch(function (error) {
+        alert(error)
+      })
+    },
     routeNewFriends: function () { 
       if (this.$route.name != "add-friend") {
         this.$router.push('/add-friend'); 
@@ -32,17 +60,11 @@ export default {
   },
   data() {
     return {
-      friends: [{
-        name: '홍길동',
-        address: '012-1232-3434'
-      },{
-        name: '홍길동',
-        address: '012-1232-3434'
-      }]
+      friends: []
     }
   },
-  beforeMount() {
-    console.log("Friend Aiga!");
+  async beforeMount() {
+    await this.initFriends();
   }
 }
 </script>

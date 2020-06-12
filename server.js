@@ -146,8 +146,7 @@ app.post('/signup', function (req, res) {
       }
     });
     
-  }
-);
+});
 
 // Login request
 app.post('/login', async function (req, res) {
@@ -200,8 +199,7 @@ app.post('/login', async function (req, res) {
         }
     });
   }  
-}
-);
+});
 
 // MyInfo request
 app.post('/my-info', async function (req, res) {
@@ -243,10 +241,9 @@ app.post('/my-info', async function (req, res) {
         })
       }
   });
-}
-);
+});
 
-// MyInfo request
+// AddFriend request
 app.post('/add-friend', async function (req, res) {
   console.log("AddFriend called.");
   userId = token2id(req.body.token);
@@ -383,6 +380,39 @@ app.post('/add-friend', async function (req, res) {
           }
         });
       }
+  });
+});
+
+// GetFriends request
+app.post('/get-friends', async function (req, res) {
+  console.log("MyInfo called.");
+  userId = token2id(req.body.token);
+  
+  // Check for authentication
+  if (!userId) {
+    console.log("Invalid token");
+    res.json({
+      success: false,
+      verified: false
+    });
+    return;
+  }
+
+  // Query name, id, addr, and prof_img
+  connection.query(
+    'SELECT name, id, addr, prof_img\
+    FROM accounts\
+    WHERE id IN (\
+    SELECT friend_id\
+    FROM friends\
+    WHERE my_id = "'+userId+'");',
+    function (err,row) {
+      // Return friends
+      console.log("Friends successfully retreived");;
+      res.json({
+        success: true,
+        friends: row
+      })
   });
 }
 );
