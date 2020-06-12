@@ -1,7 +1,10 @@
 <template>
   <div id="menu-bar">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <MyAccount/>
+    <button v-on:click ="gotoMain()" style="cursor: pointer; height:101px; width:100%; border: none; margin-bottom: 1px; background-color: #FFF2CC"> 
+      <MyAccount />
+    </button>
+    
     <div id="menu-buttons">
       <button v-on:click="component = 'friends-comp'" class="btn">친구 목록</button>
       <button v-on:click="component = 'chatroom-comp'" class="btn">채팅방</button>
@@ -27,6 +30,14 @@ export default {
   data: function () {
     return {
       component: 'friends-comp'
+    }
+  },
+  methods: {
+    gotoMain: function(){
+      console.log(this.$route.name);
+      if (this.$route.name != "placeholder") {
+        this.$router.push('/hello-world');
+      }
     }
   }
 }
