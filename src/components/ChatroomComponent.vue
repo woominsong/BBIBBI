@@ -2,7 +2,7 @@
   <div style="height: calc(~'100vh - 50px');">
     <ul>
       <li v-for="data in chatrooms" v-bind:key="data.id" style="width: 100%; margin:0;">
-        <div class="grid chatroom">
+        <button class="grid chatroom" v-on:click="clickChatroom(data.chatroom_id, data.latest_chat)">
           <div class="chatroom-profile">
             <img class="chatroom-profile-photo" src="../assets/img/profile/0.png"/>
           </div>
@@ -12,7 +12,7 @@
           <div class="chatroom-address">
             <p style="display: inline-block; align-self: flex-top;">{{data.latest_chat==null ? "대화 기록이 없습니다." : "> "+data.latest_chat}}</p>
           </div>
-        </div>
+        </button>
       </li>
     </ul>
   </div>
@@ -55,6 +55,9 @@ export default {
       if (this.$route.name != "add-chatroom") {
         this.$router.push('/add-chatroom'); 
       }
+    },
+    clickChatroom: function(cid, lchat){
+      alert("chatroom id: "+cid+", last chat: "+lchat);
     }
   },
   data() {
@@ -88,9 +91,11 @@ p {
   margin-bottom: 0;
 }
 .chatroom {
-  height: 80px;
-  border-bottom-width: 10px;
-  border-color: red;
+  height: 81px;
+  width: 100%;
+  border: none;
+  margin-bottom: 1px;
+  background-color: #FFF2CC;
 }
 .chatroom-profile {
   grid-row: 1 / 3;

@@ -3,7 +3,7 @@
     <button class="btn" v-on:click="routeNewFriends()">+ 친구 추가</button>
     <ul>
       <li v-for="data in friends" v-bind:key="data.id" style="width: 100%; margin:0;">
-        <button class="grid friend">
+        <button class="grid friend" v-on:click="clickFriend(data.id, data.name)">
           <div class="friend-profile">
             <img class="friend-profile-photo" src="../assets/img/profile/0.png"/>
           </div>
@@ -56,6 +56,9 @@ export default {
       if (this.$route.name != "add-friend") {
         this.$router.push('/add-friend'); 
       }
+    },
+    clickFriend: function(fid, fname){
+      alert("friend id: "+fid+", name: "+fname);
     }
   },
   data() {
