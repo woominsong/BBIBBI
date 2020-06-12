@@ -40,7 +40,8 @@ export default {
       .then((res) => {
         if (res.data.success == true) {
           this.$cookie.set('user',res.data.token,'5m');
-          this.$router.push('../main')
+          console.log(res.data);
+          this.$router.push('../main');
         }
         else {
           alert(res.data.message);

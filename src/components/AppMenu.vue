@@ -1,11 +1,6 @@
 <template>
   <div id="menu-bar">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <!--div id="my-account" style="display: table">
-      <div style="display:table-row">
-        <img id="my-profile" src="../assets/img/profile/0.png" style="display:table-cell;"/>
-      </div>      
-    </div-->
     <MyAccount/>
     <div id="menu-buttons">
       <button v-on:click="component = 'friends-comp'" class="btn">친구 목록</button>
@@ -18,9 +13,6 @@
 
 <script>
 //import axios from 'axios'
-/*import FriendComponent from './FriendComponent'
-import AddressComponent from './ChatroomComponent'
-import DictionaryComponent from './DictionaryComponent'*/
 import MyAccount from './MyAccount'
 
 
@@ -36,29 +28,6 @@ export default {
     return {
       component: 'friends-comp'
     }
-  },
-  methods: {
-    /*myAcc: function () {
-      if (this.user.id == "" || this.user.password == "") {
-        alert("아이디와 비밀번호를 입력해주세요!");
-        return;
-      }
-      axios.post('http://localhost:3000/login', { 
-        id: this.user.id,
-        password: this.user.password
-      })
-      .then((res) => {
-        if (res.data.success == true) {
-          this.$router.push('../corr') 
-        }
-        else {
-          //alert(res.data.message);
-        }
-      })
-      .catch(function (error) {
-        alert(error)
-      })
-    }*/
   }
 }
 </script>

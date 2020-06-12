@@ -54,10 +54,9 @@ else {
  *                      *
  ************************/
 
-// Handle requests
+// Test token action
 app.post('/auth', function(req, res){
-  console.log(req.body.token);
-  auth = isAuth(req.body.token);
+  id = token2id(req.body.token);
   if (auth) {
     res.send("인증 성공!");
   }
@@ -200,6 +199,49 @@ app.post('/login', async function (req, res) {
 }
 );
 
+// MyInfo request
+app.post('/my-info', async function (req, res) {
+  console.log("MyInfo called.");
+  userId = token2id(req.body.token);
+  
+  // Check for authentication
+  if (!userId) {
+    console.log("Invalid token");
+    res.json({
+      success: false,
+      verified: false
+    });
+    return;
+  }
+
+  // Query name, addr, and prof_img
+  connection.query(
+    'SELECT name, addr, prof_img\
+    FROM accounts\
+    WHERE id="'+userId+'";',
+    function (err,row) {
+      // Something has gone wrong with the DB. This case shouldn't happen.
+      if (row.length == 0) {
+        console.log("[ERROR] ID "+userId+" is not in the database.");;
+        res.json({
+          success: false,
+          verified: true,
+          message: "The given ID is not in the database."
+        })
+      }
+      else {
+        console.log("Data successfully sent in MyInfo.");;
+        res.json({
+          success: true,
+          name: row[0].name,
+          addr: row[0].addr,
+          prof_img: row[0].prof_img
+        })
+      }
+  });
+}
+);
+
 /************************
  *                      *
  *   Helper Functions   *
@@ -247,14 +289,8 @@ function getSalt(id_check) {
 }
 
 // Verify token
-function isAuth(tk) {
-  resolved = jwt.verify(tk, secretObj.secret);
-  if(resolved){
-    return true;
-  }
-  else{
-    return false;
-  }
+function token2id(tk) {
+  return jwt.verify(tk, secretObj.secret).id;
 }
 
 /************************

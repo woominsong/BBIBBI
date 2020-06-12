@@ -4,65 +4,38 @@
       <img id="my-profile-photo" src="../assets/img/profile/0.png"/>
     </div>
     <div id="my-name">
-      <p style="display: inline-block; align-self: flex-end;">Name</p>
+      <p style="display: inline-block; align-self: flex-end;">{{userName}}</p>
     </div>
     <div id="my-address">
-      <p style="display: inline-block; align-self: flex-top;">Address</p>
+      <p style="display: inline-block; align-self: flex-top;">{{userAddr}}</p>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-/*import FriendComponent from './FriendComponent'
-import AddressComponent from './ChatroomComponent'
-import DictionaryComponent from './DictionaryComponent'*/
 
 export default {
   name: 'login',
-  data: function () {
+  data() {
     return {
-      user: {
-        userName: '',
-        userAddr: '',
-        userImg: 1
-      }
+      userName: 'asdf',
+      userAddr: 'ffff',
+      userImg: ''
     }
   },
   methods: {
-    tryAuth: function() {
-      axios.post('http://localhost:3000/auth', {
-        token: this.$cookie.get('user')
-      })
-      .then((res) => {
-        alert(res.data);
+    myInfo: function () {
+      axios.post('http://localhost:3000/my-info', { token: this.$cookie.get('user') }).then(result => {
+        this.userName = result.data.name,
+        this.userAddr = '012-'+Math.floor((result.data.addr-1200000000)/10000)+'-'+result.data.addr%10000,
+        this.userImg = result.data.prof_img;
       })
     }
-    /*myAcc: function () {
-      if (this.user.id == "" || this.user.password == "") {
-        alert("아이디와 비밀번호를 입력해주세요!");
-        return;
-      }
-      axios.post('http://localhost:3000/login', { 
-        id: this.user.id,
-        password: this.user.password
-      })
-      .then((res) => {
-        if (res.data.success == true) {
-          this.$router.push('../corr') 
-        }
-        else {
-          alert(res.data.message);
-        }
-      })
-      .catch(function (error) {
-        alert(error)
-      })
-    }*/
   },
   beforeMount() {
-    //this.myAcc();
-    this.tryAuth();
+    console.log("Am I mounting...?");
+    this.myInfo();
   }
 }
 </script>
