@@ -25,7 +25,8 @@ CREATE TABLE bbibbi_db.chatrooms (
 chatroom_id INT PRIMARY KEY,
 p1_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
 p2_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
-latest_chat BIGINT
+latest_chat BIGINT,
+latest_chattime DATETIME
 );
 
 CREATE TABLE bbibbi_db.dictionary (

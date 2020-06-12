@@ -414,8 +414,42 @@ app.post('/get-friends', async function (req, res) {
         friends: row
       })
   });
-}
-);
+});
+
+// GetChatrooms request
+app.post('/get-chatrooms', async function (req, res) {
+  console.log("MyInfo called.");
+  userId = token2id(req.body.token);
+  
+  // Check for authentication
+  if (!userId) {
+    console.log("Invalid token");
+    res.json({
+      success: false,
+      verified: false
+    });
+    return;
+  }
+
+  // Query name, id, addr, and prof_img
+  connection.query(
+    'SELECT chatroom_id, name, latest_chat, latest_chattime, prof_img\
+    FROM chatrooms NATURAL JOIN (SELECT name, id AS p1_id, prof_img FROM accounts) a\
+    WHERE p2_id = "'+userId+'"\
+    UNION\
+    SELECT chatroom_id, name, latest_chat, latest_chattime, prof_img\
+    FROM chatrooms NATURAL JOIN (SELECT name, id AS p2_id, prof_img FROM accounts) c\
+    WHERE p1_id = "'+userId+'"\
+    ORDER BY latest_chattime DESC, chatroom_id DESC;',
+    function (err,row) {
+      // Return friends
+      console.log("Chatrooms successfully retreived");
+      res.json({
+        success: true,
+        chatrooms: row
+      })
+  });
+});
 
 /************************
  *                      *
