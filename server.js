@@ -408,7 +408,7 @@ app.post('/get-friends', async function (req, res) {
     WHERE my_id = "'+userId+'");',
     function (err,row) {
       // Return friends
-      console.log("Friends successfully retreived");;
+      console.log("Friends successfully retreived");
       res.json({
         success: true,
         friends: row
@@ -447,6 +447,86 @@ app.post('/get-chatrooms', async function (req, res) {
       res.json({
         success: true,
         chatrooms: row
+      })
+  });
+});
+
+// GetChatroomId request (myId, friendid -> chatroomid)
+app.post('/get-chatroom-id', async function (req, res) {
+  console.log("GetChatroomId called.");
+  userId = token2id(req.body.token);
+  
+  // Check for authentication
+  if (!userId) {
+    console.log("Invalid token");
+    res.json({
+      success: false,
+      verified: false
+    });
+    return;
+  }
+
+  // Query name, id, addr, and prof_img
+  connection.query(
+    'SELECT chatroom_id\
+    FROM chatrooms\
+    WHERE (p1_id = "'+userId+'" AND p2_id = "'+req.body.friend_id+'")\
+    OR (p1_id = "'+req.body.friend_id+'" AND p2_id = "'+userId+'");',
+    function (err,row) {
+      // Return chatroom id
+      console.log("Chatroom ID successfully retreived");
+      res.json({
+        success: true,
+        chatroom_id: row[0].chatroom_id
+      })
+  });
+});
+
+// GetChatroomInfo request (myId, chatroomId -> name, addr)
+app.post('/get-chatroom-info', async function (req, res) {
+  console.log("GetChatroomInfo called.");
+  userId = token2id(req.body.token);
+  
+  // Check for authentication
+  if (!userId) {
+    console.log("Invalid token");
+    res.json({
+      success: false,
+      verified: false
+    });
+    return;
+  }
+
+  console.log('SELECT name, addr\
+  FROM (SELECT p1_id AS id\
+  from chatrooms\
+  WHERE chatroom_id = '+req.body.chatroom_id+'\
+  AND p2_id = "'+userId+'"\
+  UNION\
+  SELECT p2_id AS id\
+  from chatrooms\
+  WHERE chatroom_id = '+req.body.chatroom_id+'\
+  AND p1_id = "'+userId+'") a NATURAL JOIN accounts;');
+  // Query name, id, addr, and prof_img
+  connection.query(
+    'SELECT name, addr\
+    FROM (SELECT p1_id AS id\
+    from chatrooms\
+    WHERE chatroom_id = '+req.body.chatroom_id+'\
+    AND p2_id = "'+userId+'"\
+    UNION\
+    SELECT p2_id AS id\
+    from chatrooms\
+    WHERE chatroom_id = '+req.body.chatroom_id+'\
+    AND p1_id = "'+userId+'") a NATURAL JOIN accounts;',
+    function (err,row) {
+      // Return chatroom id
+      console.log("Chatroom Info successfully retreived");
+      console.log(row);
+      res.json({
+        success: true,
+        name: row[0].name,
+        addr: row[0].addr
       })
   });
 });

@@ -3,7 +3,7 @@
     <button class="btn" v-on:click="routeNewFriends()">+ 친구 추가</button>
     <ul>
       <li v-for="data in friends" v-bind:key="data.id" style="width: 100%; margin:0;">
-        <button class="grid friend" v-on:click="clickFriend(data.id, data.name)">
+        <button class="grid friend" v-on:click="clickFriend(data.id)">
           <div class="friend-profile">
             <img class="friend-profile-photo" src="../assets/img/profile/0.png"/>
           </div>
@@ -57,12 +57,34 @@ export default {
         this.$router.push('/add-friend'); 
       }
     },
-    clickFriend: function(fid, fname){
-      //alert("friend id: "+fid+", name: "+fname);
-      console.log(''+fid+''+fname);
-      if (this.$route.path != "/chat/"+fid) {
-        this.$router.push('/chat/'+fid);
+    clickFriend: function(fid){
+      if (this.$route.path == "/chat/"+fid) {
+        return;
       }
+      axios.post('http://localhost:3000/get-chatroom-id', { 
+        token: this.$cookie.get('user'),
+        friend_id: fid
+      })
+      .then((result) => {
+        console.log(result.data);
+        if (!result.data.success) {
+          if(result.data.verified) {
+            alert(result.data.message);
+            return;
+          }
+          else {
+            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+            this.$router.push('/login');
+            return;
+          }
+        }
+        else {
+          this.$router.push({path: '/chat/'+result.data.chatroom_id, props: {chatroom_id: result.data.chatroom_id}});
+        }
+      })
+      .catch(function (error) {
+        alert(error)
+      })
     }
   },
   data() {
@@ -71,6 +93,7 @@ export default {
     }
   },
   async beforeMount() {
+    console.log("haha!")
     await this.initFriends();
   }
 }

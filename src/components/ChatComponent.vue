@@ -2,7 +2,7 @@
   <div class="chatroom">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <div id="chat-heading">
-      <h3 id="log-in-header">{{friend.name}}</h3>
+      <h3 id="log-in-header">{{chatroom_id}}</h3>
       <p style="font-size: 20px; margin:0;">{{friend.number}}</p>
     </div>
     <div id="chat-content" style="border: 0;">
@@ -34,10 +34,10 @@ function isNumeric(n) {
 
 export default {
   name: 'HelloWorld',
+  props: ['chatroom_id'],
   data() {
     return {
       friend: {
-        id: '',
         name: '친구 이름',
         number: '012-1212-3434'
       },
@@ -54,28 +54,10 @@ export default {
     }
   },
   methods: {
-    addFriend: function() {
-      if (this.user.id == "" && this.user.number == "") {
-        alert("친구의 아이디 또는 전화번호를 입력해주세요.");
-        return;
-      }
-      let phone_num = "";
-      if (this.user.number != "") {
-        let modifiedNumber = this.user.number.split("-").join("");
-        if (!isNumeric(modifiedNumber)) {
-          alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
-          return;
-        }
-        phone_num = parseInt(modifiedNumber)
-        if (phone_num < 1200000000 || phone_num >= 1300000000) {
-          alert("전화번호 형식을 012-XXXX-XXXX로 맞추어 주세요.");
-          return;
-        }
-      }
-      axios.post('http://localhost:3000/add-friend', { 
+    getChatroomInfo: function() {
+      axios.post('http://localhost:3000/get-chatroom-info', { 
         token: this.$cookie.get('user'),
-        id: this.user.id,
-        number: phone_num
+        chatroom_id: this.id
       })
       .then((result) => {
         console.log(result.data);
@@ -91,7 +73,33 @@ export default {
           }
         }
         else {
-          alert("추가되었습니다.");
+          this.friend.name = result.data.name;
+          this.friend.number = '012-'+("000" + Math.floor((result.data.addr-1200000000)/10000)).slice(-4)+'-'+("000" + result.data.addr%10000).slice(-4);
+          console.log("Successfully added friend.");
+        }
+      })
+      .catch(function (error) {
+        alert(error)
+      })
+    },
+    getChats: function() {
+      axios.post('http://localhost:3000/add-chats', { 
+        token: this.$cookie.get('user')
+      })
+      .then((result) => {
+        console.log(result.data);
+        if (!result.data.success) {
+          if(result.data.verified) {
+            alert(result.data.message);
+            return;
+          }
+          else {
+            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+            this.$router.push('/login');
+            return;
+          }
+        }
+        else {
           console.log("Successfully added friend.");
         }
       })
@@ -100,6 +108,9 @@ export default {
       })
     },
     sendMessage: function(){alert(this.msg_send);}
+  },
+  mounted() {
+    this.getChatroomInfo();
   }
 }
 </script>
@@ -164,10 +175,6 @@ p.right {
   margin-top: 5px;
   margin-bottom: 45px;
   color: #BF9000;
-}
-#friend-img {
-  margin: 30px;
-  width: 250px;
 }
 #chat-heading {
   /*background-color: red;*/
