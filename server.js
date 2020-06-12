@@ -58,10 +58,10 @@ else {
 app.post('/auth', function(req, res){
   id = token2id(req.body.token);
   if (auth) {
-    res.send("인증 성공!");
+    res.send(true);
   }
   else {
-    res.send("인증 실패!");
+    res.send(false);
   }
 });
 
@@ -290,7 +290,18 @@ function getSalt(id_check) {
 
 // Verify token
 function token2id(tk) {
-  return jwt.verify(tk, secretObj.secret).id;
+  if (tk=="init") {
+    return false;
+  }
+  console.log(tk);
+  res = jwt.verify(tk, secretObj.secret);
+  if (res) {
+    return res.id;
+  }
+  else {
+    return null;
+  }
+  
 }
 
 /************************

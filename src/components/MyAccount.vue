@@ -27,6 +27,18 @@ export default {
   methods: {
     myInfo: function () {
       axios.post('http://localhost:3000/my-info', { token: this.$cookie.get('user') }).then(result => {
+        if (!result.data.success) {
+          if(result.data.verified) {
+            alert("데이터베이스에 해당 아이디가 존재하지 않습니다.");
+            this.$route.push('/login');
+            return;
+          }
+          else {
+            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+            this.$router.push('../login');
+            return;
+          }
+        }
         this.userName = result.data.name,
         this.userAddr = '012-'+Math.floor((result.data.addr-1200000000)/10000)+'-'+result.data.addr%10000,
         this.userImg = result.data.prof_img;
@@ -34,7 +46,6 @@ export default {
     }
   },
   beforeMount() {
-    console.log("Am I mounting...?");
     this.myInfo();
   }
 }

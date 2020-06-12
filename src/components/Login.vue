@@ -50,7 +50,13 @@ export default {
       .catch(function (error) {
         alert(error)
       })
+    },
+    logOut: function() {
+      this.$cookie.set('user',"init",'5m');
     }
+  },
+  beforeMount() {
+    this.logOut();
   }
 }
 </script>

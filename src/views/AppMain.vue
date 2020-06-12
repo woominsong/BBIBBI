@@ -9,10 +9,25 @@
 
 <script>
 import AppMenu from '../components/AppMenu'
+import axios from 'axios'
+
 export default {
   name: 'AppMain',
   components: {
     AppMenu
+  },
+  methods: {
+    checkAuth: function () {
+      axios.post('http://localhost:3000/auth', { token: this.$cookie.get('user') }).then(result => {
+        if (!result) {
+          alert("token error");
+          this.$router.push('../');
+        }
+      })
+    }
+  },
+  async beforeMount() {
+    await this.checkAuth();
   }
 }
 </script>
