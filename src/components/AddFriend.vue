@@ -12,8 +12,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 function isNumeric(n) {
   return !isNaN(parseInt(n));
 }
@@ -47,16 +45,18 @@ export default {
           return;
         }
       }
-      axios.post('http://localhost:3000/add-friend', { 
+      this.$socket.emit('add-friend',{ 
         token: this.$cookie.get('user'),
         id: this.user.id,
         number: phone_num
       })
-      .then((result) => {
-        console.log(result.data);
-        if (!result.data.success) {
-          if(result.data.verified) {
-            alert(result.data.message);
+    }
+  },
+  created() {
+    this.$socket.on('add-friend', (result) => {
+        if (!result.success) {
+          if(result.verified) {
+            alert(result.message);
             return;
           }
           else {
@@ -69,11 +69,7 @@ export default {
           alert("추가되었습니다.");
           console.log("Successfully added friend.");
         }
-      })
-      .catch(function (error) {
-        alert(error)
-      })
-    }
+    });
   }
 }
 </script>

@@ -242,6 +242,145 @@ io.sockets.on('connection', function (socket) {
         }
     });
   });
+
+  // AddFriend request
+  socket.on('add-friend', async function (data) {
+    console.log("AddFriend called.");
+    userId = token2id(data.token);
+    
+    // Check for authentication
+    if (!userId) {
+      console.log("Invalid token");
+      socket.emit('add-friend', {
+        success: false,
+        verified: false
+      });
+      return;
+    }
+  
+    // Query friend account
+    query = 'SELECT id FROM accounts ';
+    if (data.id == '') {
+      query = query + 'WHERE addr = "'+data.number+'";';
+    }
+    else if (data.number == '') {
+      query = query + 'WHERE id = "'+data.id+'";';
+    }
+    else {
+      query = query + 'WHERE addr = '+data.number+' AND id = "'+data.id+'";';
+    }
+    connection.query(
+      query,
+      function (err,row) {
+        if (err) {
+          console.log("[ERROR] DB Error");
+          socket.emit('add-friend', {
+            success: false,
+            verified: true,
+            message: "DB 에러가 발생했습니다."
+          })
+          return;
+        }
+        // Such user does not exist
+        if (row.length == 0) {
+          console.log("The given user is not in database.");;
+          socket.emit('add-friend', {
+            success: false,
+            verified: true,
+            message: "존재하지 않는 사용자입니다."
+          })
+        }
+        else {
+          friend_id = row[0].id;
+          console.log("User "+friend_id+" found!");
+          // Check if already added as friends
+          connection.query('SELECT * FROM friends WHERE my_id="'+userId+'" AND friend_id="'+friend_id+'";',
+          function (err, row1) {
+            if (err) {
+              console.log("[ERROR] DB Error");
+              socket.emit('add-friend', {
+                success: false,
+                verified: true,
+                message: "DB 에러가 발생했습니다."
+              })
+              return;
+            }
+            if (row1.length != 0) {
+              console.log("The given user is already friended.");;
+              socket.emit('add-friend', {
+                success: false,
+                verified: true,
+                message: "이미 친구로 추가된 사용자입니다."
+              })
+            } 
+            else {
+              console.log("You are not already friends.");
+              // Check if a chatroom already exists
+              connection.query('SELECT chatroom_id FROM chatrooms WHERE p1_id="'+friend_id+'" AND p2_id="'+userId+'";',
+              async function (err, row2) {
+                if (err) {
+                  console.log("[ERROR] DB Error");
+                  socket.emit('add-friend', {
+                    success: false,
+                    verified: true,
+                    message: "DB 에러가 발생했습니다."
+                  })
+                  return;
+                }
+                var friend_chatroom_id;
+                if (row2.length == 0) { // If there is no existing chatroom
+                  console.log("Chatroom does not exist.");
+                  friend_chatroom_id = await newChatroomId();
+                }
+                else {
+                  console.log("Chatroom does exist.");
+                  friend_chatroom_id = row2[0].chatroom_id;
+                }
+                // Add friend
+                connection.query('INSERT INTO friends(my_id,friend_id,chatroom_id) VALUES ("'+userId+'","'+friend_id+'","'+friend_chatroom_id+'");',
+                function (err, row3) {
+                  if (err) {
+                    console.log("[ERROR] DB Error");
+                    socket.emit('add-friend', {
+                      success: false,
+                      verified: true,
+                      message: "DB 에러가 발생했습니다."
+                    })
+                    return;
+                  }
+                  // If chatroom not added yet, add chatroom
+                  if (row2.length == 0){
+                    console.log("Add chatroom.");
+                    connection.query('INSERT INTO chatrooms(chatroom_id,p1_id,p2_id) VALUES ("'+friend_chatroom_id+'","'+userId+'","'+friend_id+'");',
+                    function (err, row4){
+                      if (err) {
+                        console.log("[ERROR] DB Error");
+                        socket.emit('add-friend', {
+                          success: false,
+                          verified: true,
+                          message: "DB 에러가 발생했습니다."
+                        })
+                        return;
+                      }
+                      socket.emit('add-friend', {
+                        success: true
+                      })
+                    })
+                  }
+                  // Else, finished
+                  else {
+                    console.log("Well done!");
+                    socket.emit('add-friend', {
+                      success: true
+                    })
+                  }                
+                });
+              });
+            }
+          });
+        }
+    });
+  });
 });
 
 // Test token action
@@ -257,145 +396,6 @@ app.post('/auth', function(req, res){
   else {
     res.send(false);
   }
-});
-
-// AddFriend request
-app.post('/add-friend', async function (req, res) {
-  console.log("AddFriend called.");
-  userId = token2id(req.body.token);
-  
-  // Check for authentication
-  if (!userId) {
-    console.log("Invalid token");
-    res.json({
-      success: false,
-      verified: false
-    });
-    return;
-  }
-
-  // Query friend account
-  query = 'SELECT id FROM accounts ';
-  if (req.body.id == '') {
-    query = query + 'WHERE addr = "'+req.body.number+'";';
-  }
-  else if (req.body.number == '') {
-    query = query + 'WHERE id = "'+req.body.id+'";';
-  }
-  else {
-    query = query + 'WHERE addr = '+req.body.number+' AND id = "'+req.body.id+'";';
-  }
-  connection.query(
-    query,
-    function (err,row) {
-      if (err) {
-        console.log("[ERROR] DB Error");
-        res.json({
-          success: false,
-          verified: true,
-          message: "DB 에러가 발생했습니다."
-        })
-        return;
-      }
-      // Such user does not exist
-      if (row.length == 0) {
-        console.log("The given user is not in database.");;
-        res.json({
-          success: false,
-          verified: true,
-          message: "존재하지 않는 사용자입니다."
-        })
-      }
-      else {
-        friend_id = row[0].id;
-        console.log("User "+friend_id+" found!");
-        // Check if already added as friends
-        connection.query('SELECT * FROM friends WHERE my_id="'+userId+'" AND friend_id="'+friend_id+'";',
-        function (err, row1) {
-          if (err) {
-            console.log("[ERROR] DB Error");
-            res.json({
-              success: false,
-              verified: true,
-              message: "DB 에러가 발생했습니다."
-            })
-            return;
-          }
-          if (row1.length != 0) {
-            console.log("The given user is already friended.");;
-            res.json({
-              success: false,
-              verified: true,
-              message: "이미 친구로 추가된 사용자입니다."
-            })
-          } 
-          else {
-            console.log("You are not already friends.");
-            // Check if a chatroom already exists
-            connection.query('SELECT chatroom_id FROM chatrooms WHERE p1_id="'+friend_id+'" AND p2_id="'+userId+'";',
-            async function (err, row2) {
-              if (err) {
-                console.log("[ERROR] DB Error");
-                res.json({
-                  success: false,
-                  verified: true,
-                  message: "DB 에러가 발생했습니다."
-                })
-                return;
-              }
-              var friend_chatroom_id;
-              if (row2.length == 0) { // If there is no existing chatroom
-                console.log("Chatroom does not exist.");
-                friend_chatroom_id = await newChatroomId();
-              }
-              else {
-                console.log("Chatroom does exist.");
-                friend_chatroom_id = row2[0].chatroom_id;
-              }
-              // Add friend
-              connection.query('INSERT INTO friends(my_id,friend_id,chatroom_id) VALUES ("'+userId+'","'+friend_id+'","'+friend_chatroom_id+'");',
-              function (err, row3) {
-                if (err) {
-                  console.log("[ERROR] DB Error");
-                  res.json({
-                    success: false,
-                    verified: true,
-                    message: "DB 에러가 발생했습니다."
-                  })
-                  return;
-                }
-                // If chatroom not added yet, add chatroom
-                if (row2.length == 0){
-                  console.log("Add chatroom.");
-                  connection.query('INSERT INTO chatrooms(chatroom_id,p1_id,p2_id) VALUES ("'+friend_chatroom_id+'","'+userId+'","'+friend_id+'");',
-                  function (err, row4){
-                    if (err) {
-                      console.log("[ERROR] DB Error");
-                      res.json({
-                        success: false,
-                        verified: true,
-                        message: "DB 에러가 발생했습니다."
-                      })
-                      return;
-                    }
-                    res.json({
-                      success: true
-                    })
-                  })
-                }
-                // Else, finished
-                else {
-                  console.log("Well done!");
-                  res.json({
-                    success: true
-                  })
-                }                
-              });
-            });
-          }
-        });
-      }
-  });
 });
 
 // GetFriends request
