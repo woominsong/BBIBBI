@@ -591,22 +591,24 @@ io.sockets.on('connection', function (socket) {
         });
     });
   });
+
+  // Test token action
+  socket.on('auth', function(data){
+    id = jwt.verify(data.token, secretObj.secret).catch((err) => {
+      console.log(err);
+      socket.emit('auth', {res: false});
+    })
+    id = id.id;
+    if (id) {
+      socket.emit('auth', {res: true});
+    }
+    else {
+      socket.emit('auth', {res: false});
+    }
+  });
 });
 
-// Test token action
-app.post('/auth', function(req, res){
-  id = jwt.verify(req.body.token, secretObj.secret).catch((err) => {
-    console.log(err);
-    res.send(false);
-  })
-  id = id.id;
-  if (id) {
-    res.send(true);
-  }
-  else {
-    res.send(false);
-  }
-});
+
 
 
 /************************

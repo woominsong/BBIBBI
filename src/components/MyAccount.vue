@@ -19,8 +19,8 @@ export default {
   name: 'login',
   data() {
     return {
-      userName: 'asdf',
-      userAddr: 'ffff',
+      userName: '',
+      userAddr: '',
       userImg: ''
     }
   },
