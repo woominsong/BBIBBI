@@ -200,6 +200,48 @@ io.sockets.on('connection', function (socket) {
       });
     }  
   });
+  
+  // MyInfo request
+  socket.on('my-info', async function (data) {
+    console.log("MyInfo called.");
+    userId = token2id(data.token);
+    
+    // Check for authentication
+    if (!userId) {
+      console.log("Invalid token");
+      socket.emit('my-info',{
+        success: false,
+        verified: false
+      });
+      return;
+    }
+  
+    // Query name, addr, and prof_img
+    connection.query(
+      'SELECT name, addr, prof_img\
+      FROM accounts\
+      WHERE id="'+userId+'";',
+      function (err,row) {
+        // Something has gone wrong with the DB. This case shouldn't happen.
+        if (row.length == 0) {
+          console.log("[ERROR] ID "+userId+" is not in the database.");;
+          socket.emit('my-info',{
+            success: false,
+            verified: true,
+            message: "The given ID is not in the database."
+          })
+        }
+        else {
+          console.log("Data successfully sent in MyInfo.");;
+          socket.emit('my-info',{
+            success: true,
+            name: row[0].name,
+            addr: row[0].addr,
+            prof_img: row[0].prof_img
+          })
+        }
+    });
+  });
 });
 
 // Test token action
@@ -215,50 +257,6 @@ app.post('/auth', function(req, res){
   else {
     res.send(false);
   }
-});
-
-
-
-// MyInfo request
-app.post('/my-info', async function (req, res) {
-  console.log("MyInfo called.");
-  userId = token2id(req.body.token);
-  
-  // Check for authentication
-  if (!userId) {
-    console.log("Invalid token");
-    res.json({
-      success: false,
-      verified: false
-    });
-    return;
-  }
-
-  // Query name, addr, and prof_img
-  connection.query(
-    'SELECT name, addr, prof_img\
-    FROM accounts\
-    WHERE id="'+userId+'";',
-    function (err,row) {
-      // Something has gone wrong with the DB. This case shouldn't happen.
-      if (row.length == 0) {
-        console.log("[ERROR] ID "+userId+" is not in the database.");;
-        res.json({
-          success: false,
-          verified: true,
-          message: "The given ID is not in the database."
-        })
-      }
-      else {
-        console.log("Data successfully sent in MyInfo.");;
-        res.json({
-          success: true,
-          name: row[0].name,
-          addr: row[0].addr,
-          prof_img: row[0].prof_img
-        })
-      }
-  });
 });
 
 // AddFriend request

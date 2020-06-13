@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+//import axios from 'axios'
 
 export default {
   name: 'login',
@@ -26,9 +26,16 @@ export default {
   },
   methods: {
     myInfo: function () {
-      axios.post('http://localhost:3000/my-info', { token: this.$cookie.get('user') }).then(result => {
-        if (!result.data.success) {
-          if(result.data.verified) {
+      this.$socket.emit('my-info',{ token: this.$cookie.get('user') });
+    }
+  },
+  beforeMount() {
+    this.myInfo();
+  },
+  created() {
+    this.$socket.on('my-info', (result) => {
+        if (!result.success) {
+          if(result.verified) {
             alert("데이터베이스에 해당 아이디가 존재하지 않습니다.");
             this.$route.push('/login');
             return;
@@ -39,14 +46,10 @@ export default {
             return;
           }
         }
-        this.userName = result.data.name,
-        this.userAddr = 'TEL: 012-'+("000" + Math.floor((result.data.addr-1200000000)/10000)).slice(-4)+'-'+("000" + result.data.addr%10000).slice(-4)
-        this.userImg = result.data.prof_img;
-      })
-    }
-  },
-  beforeMount() {
-    this.myInfo();
+        this.userName = result.name,
+        this.userAddr = 'TEL: 012-'+("000" + Math.floor((result.addr-1200000000)/10000)).slice(-4)+'-'+("000" + result.addr%10000).slice(-4)
+        this.userImg = result.prof_img;
+      });
   }
 }
 </script>
