@@ -2,7 +2,7 @@
   <div style="height: calc(~'100vh - 50px');">
     <ul>
       <li v-for="data in chatrooms" v-bind:key="data.id" style="width: 100%; margin:0;">
-        <button class="grid chatroom" v-on:click="clickChatroom(data.chatroom_id, data.latest_chat)">
+        <button class="grid chatroom" v-on:click="clickChatroom(data.chatroom_id)">
           <div class="chatroom-profile">
             <img class="chatroom-profile-photo" src="../assets/img/profile/0.png"/>
           </div>
@@ -29,7 +29,6 @@ export default {
         token: this.$cookie.get('user')
       })
       .then((result) => {
-        console.log(result.data);
         if (!result.data.success) {
           if(result.data.verified) {
             alert(result.data.message);
@@ -44,7 +43,6 @@ export default {
         else {
           this.chatrooms = result.data.chatrooms;
           console.log("Successfully updated chatrooms.");
-          console.log(this.chatrooms);
         }
       })
       .catch(function (error) {
@@ -56,8 +54,8 @@ export default {
         this.$router.push('/add-chatroom'); 
       }
     },
-    clickChatroom: function(cid, lchat){
-      alert("chatroom id: "+cid+", last chat: "+lchat);
+    clickChatroom: function(cid){
+      this.$router.push('/chat/'+cid);
     }
   },
   data() {

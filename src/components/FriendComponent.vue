@@ -30,7 +30,6 @@ export default {
         token: this.$cookie.get('user')
       })
       .then((result) => {
-        console.log(result.data);
         if (!result.data.success) {
           if(result.data.verified) {
             alert(result.data.message);
@@ -45,7 +44,6 @@ export default {
         else {
           this.friends = result.data.friends;
           console.log("Successfully updated friends.");
-          console.log(this.friends);
         }
       })
       .catch(function (error) {
@@ -66,7 +64,6 @@ export default {
         friend_id: fid
       })
       .then((result) => {
-        console.log(result.data);
         if (!result.data.success) {
           if(result.data.verified) {
             alert(result.data.message);
@@ -79,7 +76,6 @@ export default {
           }
         }
         else {
-          console.log("chatroom id is "+result.data.chatroom_id);
           this.$router.push('/chat/'+result.data.chatroom_id);
         }
       })
@@ -93,9 +89,8 @@ export default {
       friends: []
     }
   },
-  async beforeMount() {
-    console.log("haha!")
-    await this.initFriends();
+  beforeMount() {
+    this.initFriends();
   }
 }
 </script>

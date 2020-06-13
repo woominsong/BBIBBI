@@ -2,7 +2,7 @@
   <div class="chatroom">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <div id="chat-heading">
-      <h3 id="log-in-header">{{chatroom_id}}</h3>
+      <h3 id="log-in-header">{{friend.name}}</h3>
       <p style="font-size: 20px; margin:0;">{{friend.number}}</p>
     </div>
     <div id="chat-content" style="border: 0;">
@@ -23,7 +23,7 @@
       <button v-on:click="sendMessage()" class="btn">보내기</button>
     </div>
   </div>
-</template>
+</template>x
 
 <script>
 import axios from 'axios';
@@ -37,8 +37,8 @@ export default {
   data() {
     return {
       friend: {
-        name: '친구 이름',
-        number: '012-1212-3434'
+        name: '',
+        number: ''
       },
       chats: [{
         send: false,
