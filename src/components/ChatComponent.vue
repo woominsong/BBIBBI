@@ -26,8 +26,6 @@
 </template>x
 
 <script>
-import axios from 'axios';
-
 function isNumeric(n) {
   return !isNaN(parseInt(n));
 }
@@ -40,13 +38,7 @@ export default {
         name: '',
         number: ''
       },
-      chats: [{
-        send: false,
-        content: 111111111111111
-      },{
-        send: true,
-        content: 222222222222222
-      }],
+      chats: [],
       msg_send: '',
       chatroom_id: ''
     }
@@ -54,58 +46,15 @@ export default {
   methods: {
     getChatroomInfo: function() {
       this.chatroom_id = this.$route.params.id;
-      axios.post('http://localhost:3000/get-chatroom-info', { 
-        token: this.$cookie.get('user'),
-        chatroom_id: this.$route.params.id
-      })
-      .then((result) => {
-        console.log(result.data);
-        if (!result.data.success) {
-          if(result.data.verified) {
-            alert(result.data.message);
-            return;
-          }
-          else {
-            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
-            this.$router.push('/login');
-            return;
-          }
-        }
-        else {
-          this.friend.name = result.data.name;
-          this.friend.number = '012-'+("000" + Math.floor((result.data.addr-1200000000)/10000)).slice(-4)+'-'+("000" + result.data.addr%10000).slice(-4);
-          console.log("Successfully loaded chatroominfo.");
-        }
-      })
-      .catch(function (error) {
-        alert(error)
-      })
-    },
-    getChats: function() {
-      axios.post('http://localhost:3000/get-chats', { 
+      this.$socket.emit('get-chatroom-info', { 
         token: this.$cookie.get('user'),
         chatroom_id: this.chatroom_id
-      })
-      .then((result) => {
-        console.log(result.data);
-        if (!result.data.success) {
-          if(result.data.verified) {
-            alert(result.data.message);
-            return;
-          }
-          else {
-            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
-            this.$router.push('/login');
-            return;
-          }
-        }
-        else {
-          this.chats = result.data.chats;
-          console.log("Successfully retrieved chats.");
-        }
-      })
-      .catch(function (error) {
-        alert(error)
+      });
+    },
+    getChats: function() {
+      this.$socket.emit('get-chats', { 
+        token: this.$cookie.get('user'),
+        chatroom_id: this.chatroom_id
       })
     },
     sendMessage: function(){
@@ -120,35 +69,71 @@ export default {
         return;
       }
       // Send message
-      axios.post('http://localhost:3000/send-chat', { 
+      this.$socket.emit('send-chat', { 
         token: this.$cookie.get('user'),
         message: message,
         chatroom_id: this.chatroom_id
-      })
-      .then((result) => {
-        if (!result.data.success) {
-          if(result.data.verified) {
-            alert(result.data.message);
-            return;
-          }
-          else {
-            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
-            this.$router.push('/login');
-            return;
-          }
-        }
-        else {
-          console.log("Successfully sent message.");
-        }
-      })
-      .catch(function (error) {
-        alert(error)
       })
     }
   },
   mounted() {
     this.getChatroomInfo();
     this.getChats();
+  },
+  created() {
+    this.$socket.on('get-chatroom-info', (result) => {
+      if (!result.success) {
+        if(result.verified) {
+          alert(result.message);
+          return;
+        }
+        else {
+          alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+          this.$router.push('/login');
+          return;
+        }
+      }
+      else {
+        this.friend.name = result.name;
+        this.friend.number = '012-'+("000" + Math.floor((result.addr-1200000000)/10000)).slice(-4)+'-'+("000" + result.addr%10000).slice(-4);
+        console.log("Successfully loaded chatroominfo.");
+      }
+    });
+
+    this.$socket.on('get-chats', (result) => {
+      if (!result.success) {
+        if(result.verified) {
+          alert(result.message);
+          return;
+        }
+        else {
+          alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+          this.$router.push('/login');
+          return;
+        }
+      }
+      else {
+        this.chats = result.chats;
+        console.log("Successfully retrieved chats.");
+      }
+    });
+
+    this.$socket.emit('send-chat', (result) => {
+      if (!result.success) {
+        if(result.verified) {
+          alert(result.message);
+          return;
+        }
+        else {
+          alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+          this.$router.push('/login');
+          return;
+        }
+      }
+      else {
+        console.log("Successfully sent message.");
+      }
+    });
   }
 }
 </script>

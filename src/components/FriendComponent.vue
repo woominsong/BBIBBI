@@ -20,8 +20,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: 'FriendComponent',
   methods: {
@@ -36,30 +34,9 @@ export default {
       }
     },
     clickFriend: function(fid){
-      axios.post('http://localhost:3000/get-chatroom-id', { 
+      this.$socket.emit('get-chatroom-id', { 
         token: this.$cookie.get('user'),
         friend_id: fid
-      })
-      .then((result) => {
-        if (!result.data.success) {
-          if(result.data.verified) {
-            alert(result.data.message);
-            return;
-          }
-          else {
-            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
-            this.$router.push('/login');
-            return;
-          }
-        }
-        else {
-          if (this.$route.path != "/chat/"+result.data.chatroom_id) {
-            this.$router.push('/chat/'+result.data.chatroom_id);
-          }
-        }
-      })
-      .catch(function (error) {
-        alert(error)
       })
     }
   },
@@ -87,6 +64,24 @@ export default {
         else {
           this.friends = result.friends;
           console.log("Successfully updated friends.");
+        }
+    });
+    this.$socket.on('get-chatroom-id', (result) => {
+        if (!result.success) {
+          if(result.verified) {
+            alert(result.message);
+            return;
+          }
+          else {
+            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+            this.$router.push('/login');
+            return;
+          }
+        }
+        else {
+          if (this.$route.path != "/chat/"+result.chatroom_id) {
+            this.$router.push('/chat/'+result.chatroom_id);
+          }
         }
     });
   }

@@ -449,6 +449,148 @@ io.sockets.on('connection', function (socket) {
         })
     });
   });
+
+  // GetChatroomId request (myId, friendid -> chatroomid)
+  socket.on('get-chatroom-id', async function (data) {
+    console.log("GetChatroomId called.");
+    userId = token2id(data.token);
+    
+    // Check for authentication
+    if (!userId) {
+      console.log("Invalid token");
+      socket.emit('get-chatroom-id', {
+        success: false,
+        verified: false
+      });
+      return;
+    }
+
+    // Query name, id, addr, and prof_img
+    connection.query(
+      'SELECT chatroom_id\
+      FROM chatrooms\
+      WHERE (p1_id = "'+userId+'" AND p2_id = "'+data.friend_id+'")\
+      OR (p1_id = "'+data.friend_id+'" AND p2_id = "'+userId+'");',
+      function (err,row) {
+        // Return chatroom id
+        console.log("Chatroom ID successfully retreived");
+        socket.emit('get-chatroom-id', {
+          success: true,
+          chatroom_id: row[0].chatroom_id
+        })
+    });
+  });
+
+  // GetChatroomInfo request (myId, chatroomId -> name, addr)
+  socket.on('get-chatroom-info', async function (data) {
+    console.log("GetChatroomInfo called.");
+    userId = token2id(data.token);
+    
+    // Check for authentication
+    if (!userId) {
+      console.log("Invalid token");
+      socket.emit('get-chatroom-info', {
+        success: false,
+        verified: false
+      });
+      return;
+    }
+    // Query name, id, addr, and prof_img
+    connection.query(
+      'SELECT name, addr\
+      FROM (SELECT p1_id AS id\
+      from chatrooms\
+      WHERE chatroom_id = '+data.chatroom_id+'\
+      AND p2_id = "'+userId+'"\
+      UNION\
+      SELECT p2_id AS id\
+      from chatrooms\
+      WHERE chatroom_id = '+data.chatroom_id+'\
+      AND p1_id = "'+userId+'") a NATURAL JOIN accounts;',
+      function (err,row) {
+        // Return chatroom id
+        console.log("Chatroom Info successfully retreived");
+        socket.emit('get-chatroom-info', {
+          success: true,
+          name: row[0].name,
+          addr: row[0].addr
+        })
+    });
+  });
+
+  // GetChats request (myId, chatroomId -> [{send, content}])
+  socket.on('get-chats', async function (data) {
+    console.log("GetChats called.");
+    userId = token2id(data.token);
+    
+    // Check for authentication
+    if (!userId) {
+      console.log("Invalid token");
+      socket.emit('get-chats', {
+        success: false,
+        verified: false
+      });
+      return;
+    }
+    // Query send_id, content
+    connection.query(
+      'SELECT send_id="'+userId+'" as send, content FROM chats\
+      WHERE chatroom_id = '+data.chatroom_id+'\
+      ORDER BY chat_id;',
+      function (err,row) {
+        // Return chat
+        console.log("Chat successfully retreived");
+        socket.emit('get-chats', {
+          success: true,
+          chats: row
+        })        
+    });
+  });
+
+  // SendChat request
+  socket.on('send-chat', async function (data) {
+    console.log("GetChatroomInfo called.");
+    userId = token2id(data.token);
+    
+    // Check for authentication
+    if (!userId) {
+      console.log("Invalid token");
+      socket.emit('send-chat', {
+        success: false,
+        verified: false
+      });
+      return;
+    }
+    // Find the current chat_id
+    connection.query(
+      'SELECT max(chat_id) as chatId FROM chats;',
+      function (err,row) {
+        let new_chat_id;
+        if (row[0].chatId == null) {
+          new_chat_id = 0;
+        }
+        else {
+          new_chat_id = row[0].chatId + 1;
+        }
+        // Insert new chat
+        connection.query(
+          'INSERT INTO chats(chatroom_id,chat_id,send_id,content) \
+          VALUES ('+data.chatroom_id+','+new_chat_id+',"'+userId+'",'+data.message+');',
+          function (err, row2) {
+            // Update latest chat
+            connection.query(
+              'UPDATE chatrooms SET latest_chat = '+data.message+', latest_chat_id = '+new_chat_id+'\
+              WHERE chatroom_id = '+data.chatroom_id+';',
+              function (err, row3) {
+                console.log("Chatroom successfully uploaded.");
+                socket.emit('send-chat', {
+                  success: true
+                })
+              }
+            );
+        });
+    });
+  });
 });
 
 // Test token action
@@ -466,150 +608,6 @@ app.post('/auth', function(req, res){
   }
 });
 
-
-
-// GetChatroomId request (myId, friendid -> chatroomid)
-app.post('/get-chatroom-id', async function (req, res) {
-  console.log("GetChatroomId called.");
-  userId = token2id(req.body.token);
-  
-  // Check for authentication
-  if (!userId) {
-    console.log("Invalid token");
-    res.json({
-      success: false,
-      verified: false
-    });
-    return;
-  }
-
-  // Query name, id, addr, and prof_img
-  connection.query(
-    'SELECT chatroom_id\
-    FROM chatrooms\
-    WHERE (p1_id = "'+userId+'" AND p2_id = "'+req.body.friend_id+'")\
-    OR (p1_id = "'+req.body.friend_id+'" AND p2_id = "'+userId+'");',
-    function (err,row) {
-      // Return chatroom id
-      console.log("Chatroom ID successfully retreived");
-      res.json({
-        success: true,
-        chatroom_id: row[0].chatroom_id
-      })
-  });
-});
-
-// GetChatroomInfo request (myId, chatroomId -> name, addr)
-app.post('/get-chatroom-info', async function (req, res) {
-  console.log("GetChatroomInfo called.");
-  userId = token2id(req.body.token);
-  
-  // Check for authentication
-  if (!userId) {
-    console.log("Invalid token");
-    res.json({
-      success: false,
-      verified: false
-    });
-    return;
-  }
-  // Query name, id, addr, and prof_img
-  connection.query(
-    'SELECT name, addr\
-    FROM (SELECT p1_id AS id\
-    from chatrooms\
-    WHERE chatroom_id = '+req.body.chatroom_id+'\
-    AND p2_id = "'+userId+'"\
-    UNION\
-    SELECT p2_id AS id\
-    from chatrooms\
-    WHERE chatroom_id = '+req.body.chatroom_id+'\
-    AND p1_id = "'+userId+'") a NATURAL JOIN accounts;',
-    function (err,row) {
-      // Return chatroom id
-      console.log("Chatroom Info successfully retreived");
-      res.json({
-        success: true,
-        name: row[0].name,
-        addr: row[0].addr
-      })
-  });
-});
-
-// GetChats request (myId, chatroomId -> [{send, content}])
-app.post('/get-chats', async function (req, res) {
-  console.log("GetChats called.");
-  userId = token2id(req.body.token);
-  
-  // Check for authentication
-  if (!userId) {
-    console.log("Invalid token");
-    res.json({
-      success: false,
-      verified: false
-    });
-    return;
-  }
-  // Query send_id, content
-  connection.query(
-    'SELECT send_id="'+userId+'" as send, content FROM chats\
-    WHERE chatroom_id = '+req.body.chatroom_id+'\
-    ORDER BY chat_id;',
-    function (err,row) {
-      // Return chat
-      console.log("Chat successfully retreived");
-      res.json({
-        success: true,
-        chats: row
-      })
-      
-  });
-});
-
-// SendChat request
-app.post('/send-chat', async function (req, res) {
-  console.log("GetChatroomInfo called.");
-  userId = token2id(req.body.token);
-  
-  // Check for authentication
-  if (!userId) {
-    console.log("Invalid token");
-    res.json({
-      success: false,
-      verified: false
-    });
-    return;
-  }
-  // Find the current chat_id
-  connection.query(
-    'SELECT max(chat_id) as chatId FROM chats;',
-    function (err,row) {
-      let new_chat_id;
-      if (row[0].chatId == null) {
-        new_chat_id = 0;
-      }
-      else {
-        new_chat_id = row[0].chatId + 1;
-      }
-      // Insert new chat
-      connection.query(
-        'INSERT INTO chats(chatroom_id,chat_id,send_id,content) \
-        VALUES ('+req.body.chatroom_id+','+new_chat_id+',"'+userId+'",'+req.body.message+');',
-        function (err, row2) {
-          // Update latest chat
-          connection.query(
-            'UPDATE chatrooms SET latest_chat = '+req.body.message+', latest_chat_id = '+new_chat_id+'\
-            WHERE chatroom_id = '+req.body.chatroom_id+';',
-            function (err, row3) {
-              console.log("Chatroom successfully uploaded.");
-              res.json({
-                success: true
-              })
-            }
-          );
-      });
-  });
-});
 
 /************************
  *                      *
