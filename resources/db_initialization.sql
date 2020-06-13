@@ -16,7 +16,7 @@ PRIMARY KEY (my_id, friend_id)
 
 CREATE TABLE bbibbi_db.chats (
 chatroom_id INT,
-sent_num INT,
+chat_id INT,
 send_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
 content BIGINT
 );
@@ -26,7 +26,7 @@ chatroom_id INT PRIMARY KEY,
 p1_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
 p2_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
 latest_chat BIGINT,
-latest_chattime DATETIME
+latest_chat_id INT
 );
 
 CREATE TABLE bbibbi_db.dictionary (

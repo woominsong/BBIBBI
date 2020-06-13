@@ -55,7 +55,9 @@ export default {
       }
     },
     clickChatroom: function(cid){
-      this.$router.push('/chat/'+cid);
+      if (this.$route.path != "/chat/"+cid) {
+        this.$router.push('/chat/'+cid);
+      }
     }
   },
   data() {

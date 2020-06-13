@@ -42,11 +42,9 @@ export default {
       },
       chats: [{
         send: false,
-        chat_id: '2017-06-29 17:54:04',
         content: 111111111111111
       },{
         send: true,
-        chat_id: '2017-06-29 17:54:05',
         content: 222222222222222
       }],
       msg_send: '',
@@ -84,8 +82,9 @@ export default {
       })
     },
     getChats: function() {
-      axios.post('http://localhost:3000/add-chats', { 
-        token: this.$cookie.get('user')
+      axios.post('http://localhost:3000/get-chats', { 
+        token: this.$cookie.get('user'),
+        chatroom_id: this.chatroom_id
       })
       .then((result) => {
         console.log(result.data);
@@ -101,7 +100,8 @@ export default {
           }
         }
         else {
-          console.log("Successfully added friend.");
+          this.chats = result.data.chats;
+          console.log("Successfully retrieved chats.");
         }
       })
       .catch(function (error) {
@@ -148,6 +148,7 @@ export default {
   },
   mounted() {
     this.getChatroomInfo();
+    this.getChats();
   }
 }
 </script>

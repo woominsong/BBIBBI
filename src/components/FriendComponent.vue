@@ -56,9 +56,6 @@ export default {
       }
     },
     clickFriend: function(fid){
-      if (this.$route.path == "/chat/"+fid) {
-        return;
-      }
       axios.post('http://localhost:3000/get-chatroom-id', { 
         token: this.$cookie.get('user'),
         friend_id: fid
@@ -76,7 +73,9 @@ export default {
           }
         }
         else {
-          this.$router.push('/chat/'+result.data.chatroom_id);
+          if (this.$route.path != "/chat/"+result.data.chatroom_id) {
+            this.$router.push('/chat/'+result.data.chatroom_id);
+          }
         }
       })
       .catch(function (error) {
