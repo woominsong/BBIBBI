@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+//import axios from 'axios'
 
 export default {
   name: 'login',
@@ -34,23 +34,10 @@ export default {
         alert("아이디와 비밀번호를 입력해주세요!");
         return;
       }
-      axios.post('http://localhost:3000/login', { 
+      this.$socket.emit('login',{ 
         id: this.user.id,
         password: this.user.password
-      })
-      .then((res) => {
-        if (res.data.success == true) {
-          this.$cookie.set('user',res.data.token,'5m');
-          console.log(res.data);
-          this.$router.push('../main');
-        }
-        else {
-          alert(res.data.message);
-        }
-      })
-      .catch(function (error) {
-        alert(error)
-      })
+      });
     },
     logOut: function() {
       this.$cookie.set('user',"init",'1h');
@@ -63,6 +50,13 @@ export default {
     this.$socket.on('hello', (data) => {
       console.log("Socket working fine");
       console.log(data);
+    });
+
+    this.$socket.on('login', (result) => {
+        if (result.success == true) {
+          this.$cookie.set('user',result.token,'1h');
+          this.$router.push('../main');
+        }
     });
   }
 }

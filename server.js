@@ -70,6 +70,7 @@ io.sockets.on('connection', function (socket) {
     socket.emit('hello',{dddd: 'dddddddd'});
   });
 
+  // Signup request
   socket.on('signup', (data) => {
     console.log("Begin signup.");
     const user = {
@@ -146,6 +147,59 @@ io.sockets.on('connection', function (socket) {
       }
     });
   });
+
+  // Login request
+  socket.on('login', async function (data) {
+    console.log("Begin login.");
+    const user = {
+      'userid': data.id,
+      'password': data.password
+    };
+    const salt = await getSalt(user.userid);
+    if (salt == "") {
+      socket.emit('login',{
+        success: false,
+        message: '아이디와 비밀번호를 다시 확인하세요.'
+      });
+      console.log("Login fail.");
+    }
+    else {
+      const encryptedPassword = bcrypt.hashSync(user.password, salt);
+      connection.query(
+        'SELECT id, name, addr, prof_img \
+        FROM accounts \
+        WHERE id = "' + user.userid + '"\
+        AND password = "' + encryptedPassword +'";', 
+        function (err, row) {
+          if (row.length==0){ // If the (ID,password) pair does not exist
+            socket.emit('login',{
+              success: false,
+              message: '아이디와 비밀번호를 다시 확인하세요.'
+            })
+            console.log("Login fail.");
+          }
+          else {
+            let token = jwt.sign({
+                id: row[0].id
+              },
+              secretObj.secret ,    // 비밀 키
+              {
+                expiresIn: '1h'
+              }
+            )
+            socket.emit('login',{
+              success: true,
+              token: token,
+              id: row[0].id,
+              name: row[0].name,
+              addr: row[0].addr,
+              prof_img: row[0].prof_img
+            })
+            console.log("Login success. Welcome back, "+user.userid+"!");
+          }
+      });
+    }  
+  });
 });
 
 // Test token action
@@ -164,58 +218,6 @@ app.post('/auth', function(req, res){
 });
 
 
-// Login request
-app.post('/login', async function (req, res) {
-  console.log("Begin login.");
-  const user = {
-    'userid': req.body.id,
-    'password': req.body.password
-  };
-  const salt = await getSalt(user.userid);
-  if (salt == "") {
-    res.json({
-      success: false,
-      message: '아이디와 비밀번호를 다시 확인하세요.'
-    })
-    console.log("Login fail.");
-  }
-  else {
-    const encryptedPassword = bcrypt.hashSync(user.password, salt);
-    connection.query(
-      'SELECT id, name, addr, prof_img \
-      FROM accounts \
-      WHERE id = "' + user.userid + '"\
-      AND password = "' + encryptedPassword +'";', 
-      function (err, row) {
-        if (row.length==0){ // If the (ID,password) pair does not exist
-          res.json({
-            success: false,
-            message: '아이디와 비밀번호를 다시 확인하세요.'
-          })
-          console.log("Login fail.");
-        }
-        else {
-          let token = jwt.sign({
-              id: row[0].id
-            },
-            secretObj.secret ,    // 비밀 키
-            {
-              expiresIn: '1h'
-            }
-          )
-          res.json({
-            success: true,
-            token: token,
-            id: row[0].id,
-            name: row[0].name,
-            addr: row[0].addr,
-            prof_img: row[0].prof_img
-          })
-          console.log("Login success. Welcome back, "+user.userid+"!");
-        }
-    });
-  }  
-});
 
 // MyInfo request
 app.post('/my-info', async function (req, res) {
