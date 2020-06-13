@@ -20,34 +20,14 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
   name: 'FriendComponent',
   methods: {
     initFriends: function () {
-      axios.post('http://localhost:3000/get-friends', { 
+      this.$socket.emit('get-friends', { 
         token: this.$cookie.get('user')
-      })
-      .then((result) => {
-        if (!result.data.success) {
-          if(result.data.verified) {
-            alert(result.data.message);
-            return;
-          }
-          else {
-            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
-            this.$router.push('/login');
-            return;
-          }
-        }
-        else {
-          this.friends = result.data.friends;
-          console.log("Successfully updated friends.");
-        }
-      })
-      .catch(function (error) {
-        alert(error)
       })
     },
     routeNewFriends: function () { 
@@ -90,6 +70,25 @@ export default {
   },
   beforeMount() {
     this.initFriends();
+  },
+  created() {
+    this.$socket.on('get-friends', (result) => {
+        if (!result.success) {
+          if(result.verified) {
+            alert(result.message);
+            return;
+          }
+          else {
+            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+            this.$router.push('/login');
+            return;
+          }
+        }
+        else {
+          this.friends = result.friends;
+          console.log("Successfully updated friends.");
+        }
+    });
   }
 }
 </script>

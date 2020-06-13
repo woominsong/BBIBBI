@@ -381,6 +381,39 @@ io.sockets.on('connection', function (socket) {
         }
     });
   });
+
+  // GetFriends request
+  socket.on('get-friends', async function (data) {
+    console.log("MyInfo called.");
+    userId = token2id(data.token);
+    
+    // Check for authentication
+    if (!userId) {
+      console.log("Invalid token");
+      socket.emit('/get-friends', {
+        success: false,
+        verified: false
+      });
+      return;
+    }
+
+    // Query name, id, addr, and prof_img
+    connection.query(
+      'SELECT name, id, addr, prof_img\
+      FROM accounts\
+      WHERE id IN (\
+      SELECT friend_id\
+      FROM friends\
+      WHERE my_id = "'+userId+'");',
+      function (err,row) {
+        // Return friends
+        console.log("Friends successfully retreived");
+        socket.emit('get-friends', {
+          success: true,
+          friends: row
+        })
+    });
+  });
 });
 
 // Test token action
@@ -398,38 +431,7 @@ app.post('/auth', function(req, res){
   }
 });
 
-// GetFriends request
-app.post('/get-friends', async function (req, res) {
-  console.log("MyInfo called.");
-  userId = token2id(req.body.token);
-  
-  // Check for authentication
-  if (!userId) {
-    console.log("Invalid token");
-    res.json({
-      success: false,
-      verified: false
-    });
-    return;
-  }
 
-  // Query name, id, addr, and prof_img
-  connection.query(
-    'SELECT name, id, addr, prof_img\
-    FROM accounts\
-    WHERE id IN (\
-    SELECT friend_id\
-    FROM friends\
-    WHERE my_id = "'+userId+'");',
-    function (err,row) {
-      // Return friends
-      console.log("Friends successfully retreived");
-      res.json({
-        success: true,
-        friends: row
-      })
-  });
-});
 
 // GetChatrooms request
 app.post('/get-chatrooms', async function (req, res) {
