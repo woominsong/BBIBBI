@@ -29,6 +29,7 @@ export default {
   },
   methods: {
     logIn: function () {
+      this.$socket.emit('hello',{asdf: "asdfasdf"});
       if (this.user.id == "" || this.user.password == "") {
         alert("아이디와 비밀번호를 입력해주세요!");
         return;
@@ -57,6 +58,12 @@ export default {
   },
   beforeMount() {
     this.logOut();
+  },
+  created() {
+    this.$socket.on('hello', (data) => {
+      console.log("Socket working fine");
+      console.log(data);
+    });
   }
 }
 </script>

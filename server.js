@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
+const socketio = require('socket.io');
 
 const app = express();
 
@@ -10,7 +11,6 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 app.use(express.static('public'));
-//var router = require('./router/main')(app);
 
 // parse application/json
 app.use(bodyParser.json());
@@ -33,9 +33,8 @@ var connection = mysql.createConnection({
     user: 'newbie',   
     password: 'SparcsNewbie!',
     database: 'bbibbi_db'
-  }
-);
-  
+});
+
 // MySQL Connect
 connection.connect(function (err) {   
 if (err) {     
@@ -53,6 +52,33 @@ else {
  *   Request Handling   *
  *                      *
  ************************/
+
+var server = app.listen(3000, function(){
+  console.log("Express server has started on port 3000")
+})
+
+var io = socketio.listen(server);
+
+io.sockets.on('connection', function (socket) {
+  console.log('Socket ID : ' + socket.id + ', Connect');
+  socket.emit('connected');
+  //clients.push(socket.id);
+
+  socket.on('hello', function (data) {
+    console.log('Socket working fine.');
+    console.log(data);
+    socket.emit('hello',{dddd: 'dddddddd'});
+  });
+
+  socket.on('login', function (data) {
+      //clientId++;
+      //console.log('user ' + data.userName + ' with ID ' + clientId + ' and socket id ' + socket.id + ' connected to server');
+      //ids.push(clientId.toString());
+      //clients.push(socket.id);
+      //nicknames.push(data.userName);
+      //socket.emit('res_login', { 'client_id': clientId });
+  });
+});
 
 // Test token action
 app.post('/auth', function(req, res){
@@ -674,6 +700,3 @@ function token2id(tk) {
  *                      *
  ************************/
 
-var server = app.listen(3000, function(){
-    console.log("Express server has started on port 3000")
-})
