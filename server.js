@@ -414,6 +414,41 @@ io.sockets.on('connection', function (socket) {
         })
     });
   });
+
+  // GetChatrooms request
+  socket.on('get-chatrooms', async function (data) {
+    console.log("MyInfo called.");
+    userId = token2id(data.token);
+    
+    // Check for authentication
+    if (!userId) {
+      console.log("Invalid token");
+      socket.emit('get-chatrooms', {
+        success: false,
+        verified: false
+      });
+      return;
+    }
+
+    // Query name, id, addr, and prof_img
+    connection.query(
+      'SELECT chatroom_id, name, latest_chat, latest_chat_id, prof_img\
+      FROM chatrooms NATURAL JOIN (SELECT name, id AS p1_id, prof_img FROM accounts) a\
+      WHERE p2_id = "'+userId+'"\
+      UNION\
+      SELECT chatroom_id, name, latest_chat, latest_chat_id, prof_img\
+      FROM chatrooms NATURAL JOIN (SELECT name, id AS p2_id, prof_img FROM accounts) c\
+      WHERE p1_id = "'+userId+'"\
+      ORDER BY latest_chat_id DESC, chatroom_id DESC;',
+      function (err,row) {
+        // Return friends
+        console.log("Chatrooms successfully retreived");
+        socket.emit('get-chatrooms', {
+          success: true,
+          chatrooms: row
+        })
+    });
+  });
 });
 
 // Test token action
@@ -432,41 +467,6 @@ app.post('/auth', function(req, res){
 });
 
 
-
-// GetChatrooms request
-app.post('/get-chatrooms', async function (req, res) {
-  console.log("MyInfo called.");
-  userId = token2id(req.body.token);
-  
-  // Check for authentication
-  if (!userId) {
-    console.log("Invalid token");
-    res.json({
-      success: false,
-      verified: false
-    });
-    return;
-  }
-
-  // Query name, id, addr, and prof_img
-  connection.query(
-    'SELECT chatroom_id, name, latest_chat, latest_chat_id, prof_img\
-    FROM chatrooms NATURAL JOIN (SELECT name, id AS p1_id, prof_img FROM accounts) a\
-    WHERE p2_id = "'+userId+'"\
-    UNION\
-    SELECT chatroom_id, name, latest_chat, latest_chat_id, prof_img\
-    FROM chatrooms NATURAL JOIN (SELECT name, id AS p2_id, prof_img FROM accounts) c\
-    WHERE p1_id = "'+userId+'"\
-    ORDER BY latest_chat_id DESC, chatroom_id DESC;',
-    function (err,row) {
-      // Return friends
-      console.log("Chatrooms successfully retreived");
-      res.json({
-        success: true,
-        chatrooms: row
-      })
-  });
-});
 
 // GetChatroomId request (myId, friendid -> chatroomid)
 app.post('/get-chatroom-id', async function (req, res) {

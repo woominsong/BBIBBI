@@ -19,34 +19,12 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   name: 'ChatroomComponent',
   methods: {
     initChatrooms: function () {
-      axios.post('http://localhost:3000/get-chatrooms', { 
+      this.$socket.emit('get-chatrooms', { 
         token: this.$cookie.get('user')
-      })
-      .then((result) => {
-        if (!result.data.success) {
-          if(result.data.verified) {
-            alert(result.data.message);
-            return;
-          }
-          else {
-            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
-            this.$router.push('/login');
-            return;
-          }
-        }
-        else {
-          this.chatrooms = result.data.chatrooms;
-          console.log("Successfully updated chatrooms.");
-        }
-      })
-      .catch(function (error) {
-        alert(error)
       })
     },
     routeNewChatrooms: function () { 
@@ -65,8 +43,27 @@ export default {
       chatrooms: []
     }
   },
-  async beforeMount() {
-    await this.initChatrooms();
+  beforeMount() {
+    this.initChatrooms();
+  },
+  created() {
+    this.$socket.on('get-chatrooms', (result) => {
+        if (!result.success) {
+          if(result.verified) {
+            alert(result.message);
+            return;
+          }
+          else {
+            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+            this.$router.push('/login');
+            return;
+          }
+        }
+        else {
+          this.chatrooms = result.chatrooms;
+          console.log("Successfully updated chatrooms.");
+        }
+    });
   }
 }
 </script>
