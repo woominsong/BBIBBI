@@ -70,39 +70,13 @@ io.sockets.on('connection', function (socket) {
     socket.emit('hello',{dddd: 'dddddddd'});
   });
 
-  socket.on('login', function (data) {
-      //clientId++;
-      //console.log('user ' + data.userName + ' with ID ' + clientId + ' and socket id ' + socket.id + ' connected to server');
-      //ids.push(clientId.toString());
-      //clients.push(socket.id);
-      //nicknames.push(data.userName);
-      //socket.emit('res_login', { 'client_id': clientId });
-  });
-});
-
-// Test token action
-app.post('/auth', function(req, res){
-  id = jwt.verify(req.body.token, secretObj.secret).catch((err) => {
-    console.log(err);
-    res.send(false);
-  })
-  id = id.id;
-  if (id) {
-    res.send(true);
-  }
-  else {
-    res.send(false);
-  }
-});
-
-// Signup request
-app.post('/signup', function (req, res) {
+  socket.on('signup', (data) => {
     console.log("Begin signup.");
     const user = {
-      'userid': req.body.id,
-      'password': req.body.password,
-      'name': req.body.name,
-      'number': req.body.number
+      'userid': data.id,
+      'password': data.password,
+      'name': data.name,
+      'number': data.number
     };
     connection.query(
       'SELECT id \
@@ -146,17 +120,17 @@ app.post('/signup', function (req, res) {
                   VALUES ("' + user.userid + '",'+ address + ',"' + encryptedPassword + '","' + username + '","' + salt + '",'+ profile +')', user, function (err, row2) {
                   if (err) throw err;
                 });
-                res.json({
+                socket.emit('signup',{
                   success: true,
                   message: '회원가입에 성공했습니다! 입력한 정보로 로그인해주세요.'
-                })
+                });
                 console.log("Signup success. Welcome "+username+"!");
               }  
               else {
-                res.json({
+                socket.emit('signup',{
                   success: false,
                   message: '이미 존재하는 번호입니다.'
-                })
+                });
                 console.log("Signup fail: Phone number already exists.");
               }              
             }
@@ -164,15 +138,31 @@ app.post('/signup', function (req, res) {
           
       }
       else {
-        res.json({
+        socket.emit('signup',{
           success: false,
           message: '이미 존재하는 아이디입니다.'
-        })
+        });
         console.log("Signup fail: ID already exists.");
       }
     });
-    
+  });
 });
+
+// Test token action
+app.post('/auth', function(req, res){
+  id = jwt.verify(req.body.token, secretObj.secret).catch((err) => {
+    console.log(err);
+    res.send(false);
+  })
+  id = id.id;
+  if (id) {
+    res.send(true);
+  }
+  else {
+    res.send(false);
+  }
+});
+
 
 // Login request
 app.post('/login', async function (req, res) {

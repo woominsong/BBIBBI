@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+//import axios from 'axios'
 
 function isNumeric(n) {
   return !isNaN(parseInt(n));
@@ -61,22 +61,21 @@ export default {
           return;
         }
       }
-      axios.post('http://localhost:3000/signup', { 
+      this.$socket.emit('signup',{ 
         id: this.user.id,
         password: this.user.password,
         name: this.user.name,
         number: phone_num
-      })
-      .then((res) => {
-        alert(res.data.message);
-        if (res.data.success == true) {
-          this.$router.push('login');
-        }
-      })
-      .catch(function (error) {
-        alert(error)
-      })
+      });
     }
+  },
+  created() {
+    this.$socket.on('signup', (result) => {
+      alert(result.message);
+      if (result.success == true) {
+        this.$router.push('login');
+      }
+    });
   }
 }
 </script>
