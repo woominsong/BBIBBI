@@ -16,7 +16,7 @@ PRIMARY KEY (my_id, friend_id)
 
 CREATE TABLE bbibbi_db.chats (
 chatroom_id INT,
-sent_at DATETIME,
+sent_num INT,
 send_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
 content BIGINT
 );

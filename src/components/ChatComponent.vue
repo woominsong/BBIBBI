@@ -28,9 +28,9 @@
 <script>
 import axios from 'axios';
 
-/*function isNumeric(n) {
+function isNumeric(n) {
   return !isNaN(parseInt(n));
-}*/
+}
 
 export default {
   name: 'HelloWorld',
@@ -42,11 +42,11 @@ export default {
       },
       chats: [{
         send: false,
-        sent_at: '2017-06-29 17:54:04',
+        chat_id: '2017-06-29 17:54:04',
         content: 111111111111111
       },{
         send: true,
-        sent_at: '2017-06-29 17:54:05',
+        chat_id: '2017-06-29 17:54:05',
         content: 222222222222222
       }],
       msg_send: '',
@@ -108,7 +108,43 @@ export default {
         alert(error)
       })
     },
-    sendMessage: function(){alert(this.msg_send);}
+    sendMessage: function(){
+      // Check is message is valid
+      if (!isNumeric(this.msg_send)) {
+        alert("15자 이내의 숫자를 입력해주세요.");
+        return;
+      }
+      let message = parseInt(this.msg_send);
+      if (message < 0 || message > 999999999999999) {
+        alert("15자 이내의 숫자를 입력해주세요.");
+        return;
+      }
+      // Send message
+      axios.post('http://localhost:3000/send-chat', { 
+        token: this.$cookie.get('user'),
+        message: message,
+        chatroom_id: this.chatroom_id
+      })
+      .then((result) => {
+        if (!result.data.success) {
+          if(result.data.verified) {
+            alert(result.data.message);
+            return;
+          }
+          else {
+            alert("토큰이 만료되었거나, 잘못된 접근입니다.");
+            this.$router.push('/login');
+            return;
+          }
+        }
+        else {
+          console.log("Successfully sent message.");
+        }
+      })
+      .catch(function (error) {
+        alert(error)
+      })
+    }
   },
   mounted() {
     this.getChatroomInfo();

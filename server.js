@@ -269,7 +269,6 @@ app.post('/add-friend', async function (req, res) {
   else {
     query = query + 'WHERE addr = '+req.body.number+' AND id = "'+req.body.id+'";';
   }
-  console.log(query);
   connection.query(
     query,
     function (err,row) {
@@ -496,17 +495,6 @@ app.post('/get-chatroom-info', async function (req, res) {
     });
     return;
   }
-
-  console.log('SELECT name, addr\
-  FROM (SELECT p1_id AS id\
-  from chatrooms\
-  WHERE chatroom_id = '+req.body.chatroom_id+'\
-  AND p2_id = "'+userId+'"\
-  UNION\
-  SELECT p2_id AS id\
-  from chatrooms\
-  WHERE chatroom_id = '+req.body.chatroom_id+'\
-  AND p1_id = "'+userId+'") a NATURAL JOIN accounts;');
   // Query name, id, addr, and prof_img
   connection.query(
     'SELECT name, addr\
@@ -522,12 +510,51 @@ app.post('/get-chatroom-info', async function (req, res) {
     function (err,row) {
       // Return chatroom id
       console.log("Chatroom Info successfully retreived");
-      console.log(row);
       res.json({
         success: true,
         name: row[0].name,
         addr: row[0].addr
       })
+  });
+});
+
+// SendChat request
+app.post('/send-chat', async function (req, res) {
+  console.log("GetChatroomInfo called.");
+  userId = token2id(req.body.token);
+  
+  // Check for authentication
+  if (!userId) {
+    console.log("Invalid token");
+    res.json({
+      success: false,
+      verified: false
+    });
+    return;
+  }
+  // Find the current chat_id
+  connection.query(
+    'SELECT max(chat_id) as chatId\
+    FROM chats\
+    WHERE chatroom_id = "'+req.body.chatroom_id+'";',
+    function (err,row) {
+      let new_chat_id;
+      if (row[0].chatId == null) {
+        new_chat_id = 0;
+      }
+      else {
+        new_chat_id = row[0].chatId + 1;
+      }
+      console.log("New chat_id "+new_chat_id+" successfully created.");
+      // Insert new chat
+      connection.query(
+        'INSERT INTO chats(chatroom_id,chat_id,send_id,content) \
+        VALUES ('+req.body.chatroom_id+','+new_chat_id+',"'+userId+'",'+req.body.message+');',
+        function (err, row2) {
+          res.json({
+            success: true
+          })
+        });
   });
 });
 
