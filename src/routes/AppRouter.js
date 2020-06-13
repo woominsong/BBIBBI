@@ -44,7 +44,8 @@ export default new Router({
         {
           path: "/chat/:id",
           name: "chat",
-          component: () => import("../components/ChatComponent")
+          component: () => import("../components/ChatComponent"),
+          props: true
         }
       ]
     }

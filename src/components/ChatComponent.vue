@@ -28,13 +28,12 @@
 <script>
 import axios from 'axios';
 
-function isNumeric(n) {
+/*function isNumeric(n) {
   return !isNaN(parseInt(n));
-}
+}*/
 
 export default {
   name: 'HelloWorld',
-  props: ['chatroom_id'],
   data() {
     return {
       friend: {
@@ -50,14 +49,16 @@ export default {
         sent_at: '2017-06-29 17:54:05',
         content: 222222222222222
       }],
-      msg_send: ''
+      msg_send: '',
+      chatroom_id: ''
     }
   },
   methods: {
     getChatroomInfo: function() {
+      this.chatroom_id = this.$route.params.id;
       axios.post('http://localhost:3000/get-chatroom-info', { 
         token: this.$cookie.get('user'),
-        chatroom_id: this.id
+        chatroom_id: this.$route.params.id
       })
       .then((result) => {
         console.log(result.data);
@@ -75,7 +76,7 @@ export default {
         else {
           this.friend.name = result.data.name;
           this.friend.number = '012-'+("000" + Math.floor((result.data.addr-1200000000)/10000)).slice(-4)+'-'+("000" + result.data.addr%10000).slice(-4);
-          console.log("Successfully added friend.");
+          console.log("Successfully loaded chatroominfo.");
         }
       })
       .catch(function (error) {

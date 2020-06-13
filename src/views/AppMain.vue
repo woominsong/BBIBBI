@@ -2,7 +2,7 @@
   <div id="app-main" style="padding: 0; width: 100vw; height: 100vh;">
     <div style="margin: 0px; padding: 0px; width: 100vw; display: grid; grid-template-columns: 3fr 7fr;">
       <AppMenu id="app-menu" style="margin: 0px; padding: 0px;"></AppMenu>
-      <router-view id="contents" style="width: 100%"></router-view>
+      <router-view id="contents" style="width: 100%" :key="$route.fullPath"></router-view>
     </div>
   </div>
 </template>

@@ -79,7 +79,8 @@ export default {
           }
         }
         else {
-          this.$router.push({path: '/chat/'+result.data.chatroom_id, props: {chatroom_id: result.data.chatroom_id}});
+          console.log("chatroom id is "+result.data.chatroom_id);
+          this.$router.push('/chat/'+result.data.chatroom_id);
         }
       })
       .catch(function (error) {
