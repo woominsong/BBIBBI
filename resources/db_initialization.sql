@@ -28,8 +28,3 @@ p2_id VARCHAR(45) REFERENCES bbibbi_db.accounts(id),
 latest_chat BIGINT,
 latest_chat_id INT
 );
-
-CREATE TABLE bbibbi_db.dictionary (
-code INT PRIMARY KEY,
-explanation VARCHAR(100)
-); 

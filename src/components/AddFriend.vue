@@ -66,7 +66,6 @@ export default {
           }
         }
         else {
-          alert("추가되었습니다.");
           console.log("Successfully added friend.");
         }
     });
