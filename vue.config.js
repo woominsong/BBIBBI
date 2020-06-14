@@ -1,5 +1,5 @@
 module.exports = {
   devServer: {
-    public: 'subdomain.domain.ext:port'
+    disableHostCheck: true
   }
 };
