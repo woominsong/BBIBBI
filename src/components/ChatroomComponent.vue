@@ -65,7 +65,6 @@ export default {
         }
     });
     this.$socket.on('update-chat', () => {
-      alert('update-chat');
       this.initChatrooms();
     });
   }

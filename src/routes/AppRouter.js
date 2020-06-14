@@ -32,12 +32,7 @@ export default new Router({
       children: [
         {
           path: "/",
-          alias: "/hello-world",
-          name: "placeholder",
-          component: () => import("../components/HelloWorld")
-        },
-        {
-          path: "/add-friend",
+          alias: "/add-friend",
           name: "add-friend",
           component: () => import("../components/AddFriend")
         },

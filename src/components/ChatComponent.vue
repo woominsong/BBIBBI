@@ -74,6 +74,7 @@ export default {
         message: message,
         chatroom_id: this.chatroom_id
       })
+      this.msg_send = '';
     }
   },
   mounted() {
@@ -121,7 +122,6 @@ export default {
     this.$socket.on('send-chat', (result) => {
       if (!result.success) {
         if(result.verified) {
-          alert(result.message);
           return;
         }
         else {
@@ -135,8 +135,8 @@ export default {
       }
     });
 
-    this.$socket.on('update-chat', (result) => {
-      if(result){ this.getChats(); }
+    this.$socket.on('update-chat', () => {
+      this.getChats();
     });
   }
 }

@@ -426,7 +426,8 @@ io.sockets.on('connection', function (socket) {
       WHERE id IN (\
       SELECT friend_id\
       FROM friends\
-      WHERE my_id = "'+userId+'");',
+      WHERE my_id = "'+userId+'")\
+      ORDER BY name ASC;',
       function (err,row) {
         // Return friends
         console.log("Friends successfully retreived");

@@ -86,7 +86,7 @@ export default {
         }
     });
 
-    this.$socket.on('add-frient', () => {
+    this.$socket.on('add-friend', () => {
       this.initFriends();
     });
   }

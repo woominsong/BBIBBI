@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <button v-on:click="debug()">debug</button>
+    <!--button v-on:click="debug()">debug</button-->
     <router-view></router-view>
   </div>
 </template>

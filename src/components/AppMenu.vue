@@ -34,8 +34,8 @@ export default {
   },
   methods: {
     gotoMain: function(){
-      if (this.$route.name != "placeholder") {
-        this.$router.push('/hello-world');
+      if (this.$route.name != "add-friend") {
+        this.$router.push('/add-friend');
       }
     }
   }

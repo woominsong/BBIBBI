@@ -57,6 +57,9 @@ export default {
           this.$cookie.set('user',result.token,'1h');
           this.$router.push('../main');
         }
+        else {
+          alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+        }
     });
   }
 }
