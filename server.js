@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mysql = require('mysql');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const socketio = require('socket.io');
 
 const app = express();
