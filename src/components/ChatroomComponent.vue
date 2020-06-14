@@ -64,6 +64,10 @@ export default {
           console.log("Successfully updated chatrooms.");
         }
     });
+    this.$socket.on('update-chat', () => {
+      alert('update-chat');
+      this.initChatrooms();
+    });
   }
 }
 </script>

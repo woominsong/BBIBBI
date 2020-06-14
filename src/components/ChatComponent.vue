@@ -118,7 +118,7 @@ export default {
       }
     });
 
-    this.$socket.emit('send-chat', (result) => {
+    this.$socket.on('send-chat', (result) => {
       if (!result.success) {
         if(result.verified) {
           alert(result.message);
@@ -133,6 +133,10 @@ export default {
       else {
         console.log("Successfully sent message.");
       }
+    });
+
+    this.$socket.on('update-chat', (result) => {
+      if(result){ this.getChats(); }
     });
   }
 }

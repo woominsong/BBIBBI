@@ -11,7 +11,7 @@
         <input type="text" name="name" id="name" class="form-control" placeholder="이름" v-model="user.name" v-on:keyup.enter="signUp"/>
         <input type="text" name="number" id="number" class="form-control" placeholder="원하는 번호 012-XXXX-XXXX" v-model="user.number" v-on:keyup.enter="signUp"/>
       </div>
-      <button v-on:click="signUp" class="btn">가입하기!</button>
+      <button v-on:click="signUp()" class="btn">가입하기!</button>
     </div>
     <div id="page-link">
       <router-link to="login">로그인하러 가기</router-link>
@@ -61,7 +61,7 @@ export default {
           return;
         }
       }
-      this.$socket.emit('signup',{ 
+      this.$socket.emit('signup',{
         id: this.user.id,
         password: this.user.password,
         name: this.user.name,
@@ -71,9 +71,11 @@ export default {
   },
   created() {
     this.$socket.on('signup', (result) => {
-      alert(result.message);
-      if (result.success == true) {
-        this.$router.push('login');
+      if (this.$route.path != '/login') {
+        alert(result.message);
+        if (result.success == true) {
+          this.$router.push('login');
+        }
       }
     });
   }

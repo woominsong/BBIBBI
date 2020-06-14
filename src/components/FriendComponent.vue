@@ -66,6 +66,7 @@ export default {
           console.log("Successfully updated friends.");
         }
     });
+
     this.$socket.on('get-chatroom-id', (result) => {
         if (!result.success) {
           if(result.verified) {
@@ -83,6 +84,10 @@ export default {
             this.$router.push('/chat/'+result.chatroom_id);
           }
         }
+    });
+
+    this.$socket.on('add-frient', () => {
+      this.initFriends();
     });
   }
 }

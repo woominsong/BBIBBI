@@ -19,6 +19,7 @@ app.use(cors());
 // JWT-related variables
 const jwt = require("jsonwebtoken");
 const secretObj = require("./src/config/jwt");
+const { default: Axios } = require('axios');
 
 /************************
  *                      *
@@ -49,6 +50,26 @@ else {
 
 /************************
  *                      *
+ *     Socket List      *
+ *                      *
+ ************************/
+
+ ids = [];
+ clients = [];
+
+ // Initialize ids & clients array
+ connection.query(
+  'SELECT id from accounts;',
+  function (err, row) {
+    row.forEach(tuple => {
+      ids.push(tuple.id);
+      clients.push('');
+    });
+  }
+);
+
+/************************
+ *                      *
  *   Request Handling   *
  *                      *
  ************************/
@@ -62,7 +83,6 @@ var io = socketio.listen(server);
 io.sockets.on('connection', function (socket) {
   console.log('Socket ID : ' + socket.id + ', Connect');
   socket.emit('connected');
-  //clients.push(socket.id);
 
   socket.on('hello', function (data) {
     console.log('Socket working fine.');
@@ -125,6 +145,8 @@ io.sockets.on('connection', function (socket) {
                   success: true,
                   message: '회원가입에 성공했습니다! 입력한 정보로 로그인해주세요.'
                 });
+                ids.push(user.userid);
+                clients.push('');
                 console.log("Signup success. Welcome "+username+"!");
               }  
               else {
@@ -135,8 +157,7 @@ io.sockets.on('connection', function (socket) {
                 console.log("Signup fail: Phone number already exists.");
               }              
             }
-          );
-          
+          );          
       }
       else {
         socket.emit('signup',{
@@ -195,6 +216,7 @@ io.sockets.on('connection', function (socket) {
               addr: row[0].addr,
               prof_img: row[0].prof_img
             })
+            updateClient(row[0].id, socket.id);
             console.log("Login success. Welcome back, "+user.userid+"!");
           }
       });
@@ -586,6 +608,21 @@ io.sockets.on('connection', function (socket) {
                 socket.emit('send-chat', {
                   success: true
                 })
+                // Find chat participants to update data
+                connection.query(
+                  'SELECT * FROM chatrooms\
+                  WHERE chatroom_id = '+data.chatroom_id+';',
+                  function (err, row4) {
+                    if (row4.length == 0) {
+                      console.log('[ERROR] Chatroom not in DB. This should not happen.');
+                    }
+                    else {
+                      console.log('Send update-chat.');
+                      io.to(getSocketId(row4[0].p1_id)).emit('update-chat', {chatroom_id: row4[0].chatroom_id});
+                      io.to(getSocketId(row4[0].p2_id)).emit('update-chat', {chatroom_id: row4[0].chatroom_id});
+                    }
+                  }
+                );
               }
             );
         });
@@ -606,10 +643,20 @@ io.sockets.on('connection', function (socket) {
       socket.emit('auth', {res: false});
     }
   });
+
+  /************************
+   *                      *
+   *   Debug Functions    *
+   *                      *
+   ************************/
+
+  socket.on('clients', function (req, res) {
+    console.log("ids:");
+    console.log(ids);
+    console.log("clients:");
+    console.log(clients);
+  })
 });
-
-
-
 
 /************************
  *                      *
@@ -686,9 +733,12 @@ function token2id(tk) {
   
 }
 
-/************************
- *                      *
- *    Running Server    *
- *                      *
- ************************/
+// Update socket client
+function updateClient(id, sid) {
+  clients[ids.indexOf(id)] = sid;
+}
+
+function getSocketId(id) {
+  return clients[ids.indexOf(id)];
+}
 

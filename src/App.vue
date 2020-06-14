@@ -1,11 +1,7 @@
 <template>
   <div id="app">
-    <!--img alt="Vue logo" src="./assets/logo.png"-->
-    <!--component v-bind:is="component" msg="Welcome to Your Vue.js App"/-->
-    <!--router-link to="/index">Go to Login</router-link-->
-    <!--router-link to="/signup">Go to Signup</router-link-->
+    <button v-on:click="debug()">debug</button>
     <router-view></router-view>
-    <!--Index></Index-->
   </div>
 </template>
 
@@ -19,6 +15,11 @@ export default {
   data() {
     return {
     }    
+  },
+  methods: {
+    debug: function(){
+      this.$socket.emit('clients');
+    }
   }
 }
 </script>
