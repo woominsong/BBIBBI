@@ -8,7 +8,6 @@
     <div id="menu-buttons">
       <button v-on:click="component = 'friends-comp'" class="btn">친구 목록</button>
       <button v-on:click="component = 'chatroom-comp'" class="btn">채팅방</button>
-      <button v-on:click="component = 'dictionary-comp'" class="btn">삐삐 사전</button>
     </div>
     <component :is="component" style="grid-row: 3;"></component>
   </div>
@@ -24,7 +23,6 @@ export default {
   components: {
     'friends-comp': ()=>import('./FriendComponent'),
     'chatroom-comp': ()=>import('./ChatroomComponent'),
-    'dictionary-comp': ()=>import('./DictionaryComponent'),
     MyAccount
   },
   data: function () {
@@ -59,7 +57,7 @@ a {
   color: #42b983;
 }
 .btn {
-  width: 33.3%;
+  width: 45%;
   height: 50px;
   background-color: #FFC000;
   font-size: 20px;
