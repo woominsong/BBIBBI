@@ -148,7 +148,7 @@ io.sockets.on('connection', function (socket) {
                 ids.push(user.userid);
                 clients.push('');
                 console.log("Signup success. Welcome "+username+"!");
-              }  
+              }
               else {
                 socket.emit('signup',{
                   success: false,
